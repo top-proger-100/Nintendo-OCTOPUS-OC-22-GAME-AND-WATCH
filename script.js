@@ -42,6 +42,145 @@ class UI {
 }
 
 
+class Tentacle {
+    #states;
+    #currendState = 0;
+    #nextStateInc = 1;
+
+    constructor(ind) {
+        const tentacleOpacity = new Image();
+        const tentacle1 = new Image();
+        const tentacle2 = new Image();
+        const tentacle3 = new Image();
+        const tentacle4 = new Image();
+        const tentacle5 = new Image();
+        if (ind == 0) {
+            tentacleOpacity.src = './спрайты/щупальца/щ1(прозрачные).png';
+            tentacle1.src = './спрайты/щупальца/щ11.png';
+            tentacle2.src = './спрайты/щупальца/щ12.png';
+            tentacle3.src = './спрайты/щупальца/щ13.png';
+            this.#states = {
+                0: {'image': tentacleOpacity, 'x': 490, 'y': 330, 'width': 165, 'height': 40}, 
+                1: {'image': tentacle1, 'x': 490, 'y': 330, 'width': 165, 'height': 40}, 
+                2: {'image': tentacle2, 'x': 490, 'y': 330, 'width': 165, 'height': 40}, 
+                3: {'image': tentacle3, 'x': 490, 'y': 330, 'width': 165, 'height': 40}
+            };
+        } else if (ind == 1) {
+            tentacleOpacity.src = './спрайты/щупальца/щ2(прозрачные).png';
+            tentacle1.src = './спрайты/щупальца/щ21.png';
+            tentacle2.src = './спрайты/щупальца/щ22.png';
+            tentacle3.src = './спрайты/щупальца/щ23.png';
+            tentacle4.src = './спрайты/щупальца/щ24.png';
+            this.#states = {
+                0: {'image': tentacleOpacity, 'x': 515, 'y': 345, 'width': 145, 'height': 130}, 
+                1: {'image': tentacle1, 'x': 515, 'y': 345, 'width': 145, 'height': 130}, 
+                2: {'image': tentacle2, 'x': 515, 'y': 345, 'width': 145, 'height': 130}, 
+                3: {'image': tentacle3, 'x': 515, 'y': 345, 'width': 145, 'height': 130},
+                4: {'image': tentacle4, 'x': 515, 'y': 345, 'width': 145, 'height': 130}
+            };
+        } else if (ind == 2) {
+            tentacleOpacity.src = './спрайты/щупальца/щ3(прозрачные).png';
+            tentacle1.src = './спрайты/щупальца/щ31.png';
+            tentacle2.src = './спрайты/щупальца/щ32.png';
+            tentacle3.src = './спрайты/щупальца/щ33.png';
+            tentacle4.src = './спрайты/щупальца/щ34.png';
+            tentacle5.src = './спрайты/щупальца/щ35.png';
+            this.#states = {
+                0: {'image': tentacleOpacity, 'x': 630, 'y': 380, 'width': 80, 'height': 155}, 
+                1: {'image': tentacle1, 'x': 630, 'y': 380, 'width': 80, 'height': 155}, 
+                2: {'image': tentacle2, 'x': 630, 'y': 380, 'width': 80, 'height': 155}, 
+                3: {'image': tentacle3, 'x': 630, 'y': 380, 'width': 80, 'height': 155},
+                4: {'image': tentacle4, 'x': 630, 'y': 380, 'width': 80, 'height': 155},
+                5: {'image': tentacle5, 'x': 630, 'y': 380, 'width': 80, 'height': 155},
+            };
+        } else if (ind == 3) {
+            tentacleOpacity.src = './спрайты/щупальца/щ4(прозрачные).png';
+            tentacle1.src = './спрайты/щупальца/щ41.png';
+            tentacle2.src = './спрайты/щупальца/щ42.png';
+            tentacle3.src = './спрайты/щупальца/щ43.png';
+            tentacle4.src = './спрайты/щупальца/щ44.png';
+            this.#states = {
+                0: {'image': tentacleOpacity, 'x': 735, 'y': 420, 'width': 40, 'height': 120}, 
+                1: {'image': tentacle1, 'x': 735, 'y': 420, 'width': 40, 'height': 120}, 
+                2: {'image': tentacle2, 'x': 735, 'y': 420, 'width': 40, 'height': 120}, 
+                3: {'image': tentacle3, 'x': 735, 'y': 420, 'width': 40, 'height': 120},
+                4: {'image': tentacle4, 'x': 735, 'y': 420, 'width': 40, 'height': 120},
+            };
+        } else if (ind == 4) {
+            tentacleOpacity.src = './спрайты/щупальца/щ5(прозрачные).png';
+            tentacle1.src = './спрайты/щупальца/щ51.png';
+            tentacle2.src = './спрайты/щупальца/щ52.png';
+            tentacle3.src = './спрайты/щупальца/щ53.png';
+            this.#states = {
+                0: {'image': tentacleOpacity, 'x': 880, 'y': 460, 'width': 50, 'height': 90}, 
+                1: {'image': tentacle1, 'x': 880, 'y': 460, 'width': 50, 'height': 90}, 
+                2: {'image': tentacle2, 'x': 880, 'y': 460, 'width': 50, 'height': 90}, 
+                3: {'image': tentacle3, 'x': 880, 'y': 460, 'width': 50, 'height': 90},
+            };
+        }
+    }
+    updateCurrentState() {
+        if (this.#currendState == Object.keys(this.#states).length - 1) {
+            this.#nextStateInc = -1;
+        } else if (this.#currendState == 0) {
+            this.#nextStateInc = 1;
+        }
+        this.#currendState += this.#nextStateInc;
+    }
+    getCurrentState() {
+        return this.#states[this.#currendState];
+    }
+    getIs0CurrentState() {
+        return this.#currendState == 0;
+    }
+    getIsLastCurrentState() {
+        return this.#currendState == Object.keys(this.#states).length - 1;
+    }
+}
+
+
+class Octopus {
+    #tentacles;
+    #currentTentacle = 0;
+    #tentacle1;
+    #tentacle2;
+
+    constructor() {
+        this.#tentacle1 = new Tentacle(0);
+        this.#tentacle2 = new Tentacle(1);
+        this.#tentacles = [this.#tentacle1, new Tentacle(3), new Tentacle(2), new Tentacle(4)];
+    }
+
+    move() {
+        if (this.#tentacles[0].getIs0CurrentState()) {
+            this.#tentacles[0] = Math.floor(Math.random() * 2) == 0 ? this.#tentacle1 : this.#tentacle2;
+        }
+        this.#tentacles[this.#currentTentacle % this.#tentacles.length].updateCurrentState();
+        this.#currentTentacle++;
+    }
+
+    getFirstTentacle() {
+        return this.#tentacle1.getCurrentState();
+    }
+
+    getSecondTentacle() {
+        return this.#tentacle2.getCurrentState();
+    }
+
+    getThirdTentacle() {
+        return this.#tentacles[1].getCurrentState();
+    }
+
+    getFourthTentacle() {
+        return this.#tentacles[2].getCurrentState();
+    }
+
+    getFifthTentacle() {
+        return this.#tentacles[3].getCurrentState();
+    }
+}
+
+
 class Diver {
     #diversStates;
     #diversStatesWithoutBag;
@@ -52,7 +191,7 @@ class Diver {
     #firstBoatPos = 2;
     #lastPos = 7;
     #leftBorder = 0;
-    #isWithBag = false; // когда умирает или достигает обратно лодки сделать также false
+    #isWithBag = false;
 
     constructor() {
         const image0 = new Image();
@@ -226,6 +365,8 @@ function main() {
     var ui = new UI();
     var pressedButton = ui.getPressedButton();
 
+    var octopus = new Octopus();
+
     var divers = [new Diver()];
     divers[0].setIsFirst(true);
     var currentDiver = divers[0];
@@ -288,6 +429,7 @@ function main() {
     var onBoatCount = 0;
     var bagEmptyCount = 0;
     var isBagEmptyAnim = false;
+    var octopusMoveSteps = 0;
 
     setInterval(function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -302,6 +444,28 @@ function main() {
             ctx.drawImage(pressedButton, 1240, 557, 100, 100);
         }
         
+        if (octopusMoveSteps == 20 || octopusMoveSteps == 40 || octopusMoveSteps == 60 || octopusMoveSteps == 80 || octopusMoveSteps == 100) {
+            octopus.move();
+        }
+
+        if (octopusMoveSteps == 100) {
+            octopusMoveSteps = 0;
+        }
+
+        octopusMoveSteps++;
+
+        var firstTentacle = octopus.getFirstTentacle();
+        ctx.drawImage(firstTentacle['image'], firstTentacle['x'], firstTentacle['y'], firstTentacle['width'], firstTentacle['height']);
+        var secondTentacle = octopus.getSecondTentacle();
+        ctx.drawImage(secondTentacle['image'], secondTentacle['x'], secondTentacle['y'], secondTentacle['width'], secondTentacle['height']);
+        var thirdTentacle = octopus.getThirdTentacle();
+        ctx.drawImage(thirdTentacle['image'], thirdTentacle['x'], thirdTentacle['y'], thirdTentacle['width'], thirdTentacle['height']);
+        var fourthTentacle = octopus.getFourthTentacle();
+        ctx.drawImage(fourthTentacle['image'], fourthTentacle['x'], fourthTentacle['y'], fourthTentacle['width'], fourthTentacle['height']);
+        var fifthTentacle = octopus.getFifthTentacle();
+        ctx.drawImage(fifthTentacle['image'], fifthTentacle['x'], fifthTentacle['y'], fifthTentacle['width'], fifthTentacle['height']);
+        
+
         var digits = ui.getDigits();
         for (let key of Object.keys(digits)) {
             var digit = digits[key];
