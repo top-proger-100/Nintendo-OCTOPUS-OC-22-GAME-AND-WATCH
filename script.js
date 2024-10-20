@@ -5,14 +5,19 @@ class UI {
 
     constructor() {
         const digit1 = new Image();
-        digit1.src = './спрайты/интерфейс/-1.png';
+        digit1.src = './спрайты/интерфейс/0.png';
         const digit2 = new Image();
         digit2.src = './спрайты/интерфейс/-1.png';
         const digit3 = new Image();
         digit3.src = './спрайты/интерфейс/-1.png';
         const digit4 = new Image();
         digit4.src = './спрайты/интерфейс/-1.png';
-        this.#digits = [digit1, digit2, digit3, digit4];
+        this.#digits = {
+            0: {'x': 830, 'y': 205, 'width': 40, 'height': 65, 'image': digit1}, 
+            1: {'x': 782, 'y': 205, 'width': 40, 'height': 65, 'image': digit2},
+            2: {'x': 715, 'y': 205, 'width': 40, 'height': 65, 'image': digit3},
+            3: {'x': 668, 'y': 205, 'width': 40, 'height': 65, 'image': digit4}
+        };
 
         const pressedButton = new Image();
         pressedButton.src = "./спрайты/интерфейс/нажатая кнопка.png"; 
@@ -24,7 +29,12 @@ class UI {
     }
     addScore() {
         this.#score++;
-        //console.log(this.#score);
+        let strScore = String(this.#score);
+        for (let i = 0; i < strScore.length; i++) {
+            const image = new Image();
+            image.src = `./спрайты/интерфейс/${strScore[i]}.png`;
+            this.#digits[strScore.length-1-i]['image'] = image;
+        }
     }
     getPressedButton() {
         return this.#pressedButton;
@@ -42,6 +52,7 @@ class Diver {
     #firstBoatPos = 2;
     #lastPos = 7;
     #leftBorder = 0;
+    #isWithBag = false; // когда умирает или достигает обратно лодки сделать также false
 
     constructor() {
         const image0 = new Image();
@@ -90,15 +101,15 @@ class Diver {
         this.#diversStatesWithBag = {
             0: { 'x': 550, 'y': 210, 'width': 50, 'height': 60, 'image': image0 },
             1: { 'x': 500, 'y': 210, 'width': 50, 'height': 60, 'image': image0 },
-            2: { 'x': 417, 'y': 210, 'width': 80, 'height': 60, 'image': image2wb },
+            2: { 'x': 415, 'y': 210, 'width': 88, 'height': 60, 'image': image2wb },
             3: { 'x': 425, 'y': 320, 'width': 105, 'height': 85, 'image': image3wb },
             4: { 'x': 450, 'y': 440, 'width': 80, 'height': 100, 'image': image4wb },
             5: { 'x': 555, 'y': 505, 'width': 85, 'height': 90, 'image': image5wb },
             6: { 'x': 675, 'y': 505, 'width': 85, 'height': 90, 'image': image6wb },
             7: { 'x': 795, 'y': 510, 'width': 105, 'height': 85, 'image': image7wb },
-            8: { 'x': 794, 'y': 510, 'width': 160, 'height': 86, 'image': image8wb },
+            8: { 'x': 794, 'y': 509, 'width': 160, 'height': 83.5, 'image': image8wb },
             9: { 'x': 795, 'y': 510, 'width': 105, 'height': 85, 'image': image7wb },
-            10: { 'x': 794, 'y': 510, 'width': 105, 'height': 86, 'image': image9wb },
+            10: { 'x': 794, 'y': 510, 'width': 107, 'height': 86, 'image': image9wb },
         }
         
         this.#diversStates = this.#diversStatesWithoutBag;
@@ -108,7 +119,7 @@ class Diver {
         this.#isFirst = isFirst;
         if (isFirst) {
             this.#curInd = this.#firstBoatPos;
-            this.#leftBorder = this.#firstBoatPos;
+            this.#leftBorder = this.#firstBoatPos+1;
         }
     }
     setIsAlive(isAlive) {
@@ -118,6 +129,24 @@ class Diver {
     isGetMoneyPos() {
         return this.#curInd == this.#lastPos;
     }
+    getIsOnBoat() {
+        return this.#curInd == this.#firstBoatPos;
+    }
+    getIsOnBoatWithBag() {
+        return this.#curInd == this.#firstBoatPos && this.#isWithBag;
+    }
+    getIsWithBag() {
+        return this.#isWithBag;
+    }
+    bagAnimationMovement() {
+        if (this.#isWithBag) {
+            this.#isWithBag = false;
+            this.#diversStates = this.#diversStatesWithoutBag;
+        } else {
+            this.#isWithBag = true;
+            this.#diversStates = this.#diversStatesWithBag;
+        }
+    }
     getIsAlive() {
         return this.#isAlive;
     }
@@ -125,6 +154,10 @@ class Diver {
         return this.#diversStates[this.#curInd];
     }
     moveLeft() {
+        if (this.#curInd == this.#firstBoatPos) {
+            this.#diversStates = this.#diversStatesWithoutBag;
+            this.#leftBorder = this.#firstBoatPos + 1;
+        }
         if (this.#isAlive && this.#curInd > this.#leftBorder && this.#curInd <= this.#lastPos) {
             this.#curInd--;
         }
@@ -132,6 +165,11 @@ class Diver {
     moveRight() {
         if (this.#curInd == this.#lastPos) {
             this.#diversStates = this.#diversStatesWithBag;
+            this.#isWithBag = true;
+            this.#leftBorder = this.#firstBoatPos;
+        }
+        if (this.#curInd == this.#firstBoatPos) {
+            this.#leftBorder = this.#firstBoatPos+1;
         }
         if (this.#isAlive && this.#curInd < this.#lastPos) {
             this.#curInd++;
@@ -159,19 +197,20 @@ class Diver {
 
 function getMoneyAnimation(ui, currentDiver, obj, ctx) {
     if (currentDiver.isGetMoneyPos() && !obj.animationGetMoneyPlay) {
-        ui.addScore();
         obj.animationGetMoneyPlay = true;
         var getMoney = setInterval(function() {
             currentDiver.getMoney();
             let diverAttrs = currentDiver.getAttrs();
             ctx.drawImage(diverAttrs['image'], diverAttrs['x'], diverAttrs['y'], diverAttrs['width'], diverAttrs['height']);
+            if (currentDiver.getIsWithBag()) 
             obj.innerCounter++;
             if (obj.innerCounter >= 4) {
                 obj.innerCounter = 0;
                 obj.animationGetMoneyPlay = false;
+                ui.addScore();
                 clearInterval(getMoney);
             }
-        }, 200);
+        }, 100);
     }
 }
 
@@ -194,9 +233,13 @@ function main() {
     var innerCounter = 0;
     var animationGetMoneyPlay = false;
 
+    const obj = { innerCounter: innerCounter, animationGetMoneyPlay: animationGetMoneyPlay };
+
     window.addEventListener('keyup', function(event) {
         if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-            if (!obj.animationGetMoneyPlay) currentDiver.moveLeft();
+            if (!obj.animationGetMoneyPlay) {
+                currentDiver.moveLeft();
+            }
             isLeftButtonPressed = false;
         } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
             currentDiver.moveRight();
@@ -205,12 +248,11 @@ function main() {
 
     });
 
-    const obj = { innerCounter: innerCounter, animationGetMoneyPlay: animationGetMoneyPlay };
     window.addEventListener('keydown', function(event) {
         if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-            if (!animationGetMoneyPlay) isLeftButtonPressed = true;
+            isLeftButtonPressed = true;
         } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-            if (!animationGetMoneyPlay) isRightButtonPressed = true;
+            isRightButtonPressed = true;
             getMoneyAnimation(ui, currentDiver, obj, ctx);
         }
     });
@@ -221,7 +263,7 @@ function main() {
             const clickX = event.clientX - rect.left;
             const clickY = event.clientY - rect.top; 
             if (clickX >= 100 && clickX <= 200 && clickY >= 557 && clickY <= 657) {
-                isLeftButtonPressed = true;
+                if (!obj.animationGetMoneyPlay) isLeftButtonPressed = true;
             } else if (clickX >= 1240 && clickX <= 1340 && clickY >= 557 && clickY <= 657) {
                 isRightButtonPressed = true;
                 getMoneyAnimation(ui, currentDiver, obj, ctx);
@@ -235,7 +277,7 @@ function main() {
             const clickY = event.clientY - rect.top; 
             if (clickX >= 100 && clickX <= 200 && clickY >= 557 && clickY <= 657) {
                 isLeftButtonPressed = false;
-                currentDiver.moveLeft();
+                if (!obj.animationGetMoneyPlay) currentDiver.moveLeft();
             } else if (clickX >= 1240 && clickX <= 1340 && clickY >= 557 && clickY <= 657) {
                 isRightButtonPressed = false;
                 currentDiver.moveRight();
@@ -243,6 +285,10 @@ function main() {
         }
     });
     
+    var onBoatCount = 0;
+    var bagEmptyCount = 0;
+    var isBagEmptyAnim = false;
+
     setInterval(function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
@@ -256,9 +302,36 @@ function main() {
             ctx.drawImage(pressedButton, 1240, 557, 100, 100);
         }
         
-        
+        var digits = ui.getDigits();
+        for (let key of Object.keys(digits)) {
+            var digit = digits[key];
+            ctx.drawImage(digit['image'], digit['x'], digit['y'], digit['width'], digit['height']);
+        }
+
+        if (currentDiver.getIsOnBoatWithBag()) {
+            isBagEmptyAnim = true;
+        }
+        if (isBagEmptyAnim) {
+            bagEmptyCount++;
+        }
+        if (bagEmptyCount == 12 || bagEmptyCount == 20 || bagEmptyCount == 30) {
+            currentDiver.bagAnimationMovement();
+            ui.addScore();
+            if (bagEmptyCount == 30) {
+                isBagEmptyAnim = false;
+                bagEmptyCount = 0;
+            }
+        }
+
+        if (onBoatCount == 250) {
+            currentDiver.moveRight();
+        }
+        if (currentDiver.getIsOnBoat()) {
+            onBoatCount++;
+        } else {
+            onBoatCount = 0;
+        }
     }, 20);
-    //gameLoop(divers);
 }
 
 main();
