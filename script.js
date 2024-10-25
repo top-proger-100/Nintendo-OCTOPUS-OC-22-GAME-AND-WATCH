@@ -48,14 +48,14 @@ const onBoatParams = {
     border: 250,
     // при нахождении дайвера в лодке и при бездействии в течение некоторого времени он самостоятельно покидает лодку
     animate() {
-        /*if (this.counter >= this.border) {
+        if (this.counter >= this.border) {
             currentDiver.moveRight();
         }
         if (currentDiver.getIsOnBoat() && !bagEmpty.flag && !catchedByOctopus.flag && !collision.flag) {
             this.counter++;
         } else {
             this.counter = 0;
-        }*/
+        }
     }
 };
 

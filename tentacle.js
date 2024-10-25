@@ -17,13 +17,13 @@ class Tentacle {
      */
     #collisionValues;
     #minLeftState;
-    #isMoveCicle;
+    #moveUpCicle;
 
     constructor(ind) {
         this.#currentState = 0;
         this.#nextStateInc = 1;
         this.#minLeftState = 0;
-        this.#isMoveCicle = false;
+        this.#moveUpCicle = true;
 
         this.#states = {};
         switch (ind) {
@@ -74,10 +74,18 @@ class Tentacle {
     updateCurrentState() {
         if (this.#currentState == Object.keys(this.#states).length - 1) {
             this.#nextStateInc = -1;
+            this.#moveUpCicle = false;
         } else if (this.#currentState == this.#minLeftState) {
             this.#nextStateInc = 1;
         }
         this.#currentState += this.#nextStateInc;
+        if (this.#currentState == this.#minLeftState && !this.#moveUpCicle) {
+            this.#moveUpCicle = true;
+        }
+    }
+
+    get moveUpCicle() {
+        return this.#moveUpCicle;
     }
     
     /**

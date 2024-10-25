@@ -30,7 +30,9 @@ class Octopus {
         this.#tentacle1 = new Tentacle(1);
         this.#tentacle2 = new Tentacle(2);
         this.#tentacles = [this.#tentacle1, new Tentacle(4), new Tentacle(3), new Tentacle(5)];
-        this.#tentacles[Math.floor(Math.random() * 4)].minLeftState = 1;
+        let randomV = Math.floor(Math.random() * 4);
+        this.#tentacles[randomV].minLeftState = 1;
+        this.#tentacleOneFixedState = randomV;
     }
 
     /**
@@ -41,16 +43,22 @@ class Octopus {
         if (this.#tentacles[0].currentState == 0) {
             this.#tentacles[0] = Math.floor(Math.random() * 2) == 0 ? this.#tentacle1 : this.#tentacle2;
         }
-        this.#tentacles[this.#currentTentacle % this.#tentacles.length].updateCurrentState();
-        /*if (this.#moveB) {
-            if (this.#tentacles[this.#currentTentacle % this.#tentacles.length].minLeftState == 1 && 
-                this.#tentacles[this.#currentTentacle % this.#tentacles.length].currentState == 1) {
-                this.#tentacles[this.#currentTentacle % this.#tentacles.length].minLeftState = 0;
+        if (this.#moveB) {
+            if (this.#currentTentacle % this.#tentacles.length == this.#tentacleOneFixedState && 
+                this.#tentacles[this.#tentacleOneFixedState].currentState == 2 && this.#tentacles[this.#tentacleOneFixedState].moveUpCicle) {
+                this.#tentacles[this.#tentacleOneFixedState].minLeftState = 0;
                 let randomV = Math.floor(Math.random() * 4);
-                console.log(randomV);
+                while (randomV == this.#tentacleOneFixedState) {
+                    randomV = Math.floor(Math.random() * 4);
+                }
                 this.#tentacles[randomV].minLeftState = 1;
+                if (this.#tentacles[randomV].currentState == 0) {
+                    this.#tentacles[randomV].currentState = 1;
+                }
+                this.#tentacleOneFixedState = randomV;
             }
-        }*/
+        }
+        this.#tentacles[this.#currentTentacle % this.#tentacles.length].updateCurrentState();
         this.#currentTentacle++;
     }
 
