@@ -60,13 +60,13 @@ class Diver {
         this.#diversStates = this.#diversStatesWithoutBag;
 
         this.#catchedPos = 0;
+        const catchImage0 = new Image();
+        catchImage0.src = './спрайты/водолазы/п0.png';
         const catchImage1 = new Image();
         catchImage1.src = './спрайты/водолазы/п1.png';
-        const catchImage2 = new Image();
-        catchImage2.src = './спрайты/водолазы/п2.png';
         this.#diversCatchedStates = {
-            0: { 'x': 680, 'y': 380, 'width': 140, 'height': 110, 'image': catchImage1 },
-            1: { 'x': 680, 'y': 380, 'width': 140, 'height': 110, 'image': catchImage2 }
+            0: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage0 },
+            1: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage1 }
         }
     }
 
@@ -75,6 +75,7 @@ class Diver {
         this.#curInd = this.#firstBoatPos;
         this.#leftBorder = this.#firstBoatPos+1;
         this.#catchedPos = 0;
+        this.#isAlive = true;
     }
 
     setDeath() {
@@ -108,8 +109,20 @@ class Diver {
         }
     }
 
-    isAlive() {
+    /** Возвращает признак (живой\мёртвый)
+     * @return {boolean} 
+     */
+    get alive() {
         return this.#isAlive;
+    }
+
+    /**
+     * @param {boolean} flag - живой\мёртвый
+     */
+    set alive(flag) {
+        this.#diversStates = this.#diversStatesWithoutBag;
+        this.#isAlive = flag;
+        this.#isWithBag = false;
     }
 
     getAttrs() {
@@ -141,10 +154,12 @@ class Diver {
     }
 
     getMoney() {
-        if (this.#curInd >= this.#lastPos && this.#curInd < Object.keys(this.#diversStates).length-1) {
-            this.#curInd++;
-        } else if (this.#curInd >= Object.keys(this.#diversStates).length-1) {
-            this.#curInd = this.#lastPos;
+        if (this.#isAlive) {
+            if (this.#curInd >= this.#lastPos && this.#curInd < Object.keys(this.#diversStates).length-1) {
+                this.#curInd++;
+            } else if (this.#curInd >= Object.keys(this.#diversStates).length-1) {
+                this.#curInd = this.#lastPos;
+            }
         }
     }
 
@@ -160,7 +175,6 @@ class Diver {
         return this.#curInd;
     }
 
-    // переделать на setBoatStartPos
     set currentInd(ind) {
         if (ind >= 0 && ind < Object.keys(this.#diversStates).length) {
             this.#curInd = ind;

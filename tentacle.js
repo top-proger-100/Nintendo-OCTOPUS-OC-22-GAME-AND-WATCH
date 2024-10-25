@@ -1,19 +1,29 @@
 class Tentacle {
     /**
-     * @typedef {Object.<number, Object.<string, any>>} - словарь с номерами позиций,
+     * @type {Object.<number, Object.<string, any>>} - объект с номерами позиций,
      *  изображениями, координатами и размерами
      */
     #states;
     /**
-     * @typedef {Number} - текущее состояние щупальца (от спрятонного до полностью раскрывшегося)
+     * @type {Number} - текущее состояние щупальца (от спрятанного до полностью раскрывшегося)
      */
-    #currendState;
+    #currentState;
+    /**
+     * @type {Number} - направление (+1 или -1) щупальца (на раскрытие или на укрытие)
+     */
     #nextStateInc;
+    /**
+     * @type {Array<number>} - массив позиций дайвера, который соответствует конкретному щупальцу 
+     */
     #collisionValues;
+    #minLeftState;
+    #isMoveCicle;
 
     constructor(ind) {
-        this.#currendState = 0;
+        this.#currentState = 0;
         this.#nextStateInc = 1;
+        this.#minLeftState = 0;
+        this.#isMoveCicle = false;
 
         this.#states = {};
         switch (ind) {
@@ -40,6 +50,16 @@ class Tentacle {
         }
     }
 
+    /**
+     * Данный метод задаёт состояния и атрибуты щупальца
+     * @param {number} sourceIndex - количество возможных состояния щупальца
+     * @param {number} ind - номер щупальца (нужен для пути фотографии) 
+     * @param {number} x - положение по горизонтали
+     * @param {number} y - положение по вертикали
+     * @param {number} width - ширина
+     * @param {number} height - высота
+     * @return {void}
+     */
     #initStates(sourceIndex, ind, x, y, width, height) {
         for (let i = 0; i < sourceIndex; i++) {
             const img = new Image();
@@ -48,28 +68,62 @@ class Tentacle {
         }
     }
 
+    /** Данный метод меняет состояние щупальца
+     * @return {void}
+     */
     updateCurrentState() {
-        if (this.#currendState == Object.keys(this.#states).length - 1) {
+        if (this.#currentState == Object.keys(this.#states).length - 1) {
             this.#nextStateInc = -1;
-        } else if (this.#currendState == 0) {
+        } else if (this.#currentState == this.#minLeftState) {
             this.#nextStateInc = 1;
         }
-        this.#currendState += this.#nextStateInc;
+        this.#currentState += this.#nextStateInc;
     }
     
+    /**
+     * @return {Object.<string, any>} - атрибуты щупальца
+     */
+    get currentStatePicture() {
+        return this.#states[this.#currentState];
+    }
+
+    /** Текущее состояние щупальца
+     * @return {number} 
+     */
     get currentState() {
-        return this.#states[this.#currendState];
+        return this.#currentState;
     }
 
-    getIs0CurrentState() {
-        return this.#currendState == 0;
-    }
+    /** 
+     * @param {number} state - состояние щупальца
+     */
+    set currentState(state) {
+        if (state >= 0 && state < Object.keys(this.#states).length) {
+            this.#currentState = state;
+        }
+    } 
 
+    /** Раскрылось ли щупальце до конца
+     * @return {boolean} 
+     */
     getIsLastCurrentState() {
-        return this.#currendState == Object.keys(this.#states).length - 1;
+        return this.#currentState == Object.keys(this.#states).length - 1;
     }
 
-    getCollisionValues() {
+    /** Возвращает массив состояний дайвера, который соответсвует данному щупальцу
+     * @return {Array<number>}
+     */
+    get collisionValues() {
         return this.#collisionValues;
+    }
+
+    set minLeftState(state) {
+        if (state >= 0 && state <= Object.keys(this.#states).length - 1) {
+            this.#minLeftState = state;
+        }
+    }
+
+    get minLeftState() {
+        return this.#minLeftState;
     }
 }
