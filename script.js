@@ -2,10 +2,13 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 var isGame = false;
+var isTime = false;
+var isAlarm = false;
 
 var ui = new UI();
 var background = ui.firstBackground;
 var currentGameLabel = ui.gameLabel;
+var twoPoints = ui.twoPoints;
 
 var octopus = new Octopus();
 
@@ -75,7 +78,11 @@ const bagEmpty = {
         } 
         if (this.counter > 0 && this.counter % this.divider == 0) {
             currentDiver.bagAnimationMovement();
-            ui.addScore();
+            if (!isTime) {
+                ui.addScore();
+            } else {
+                ui.score = 0;
+            }
             if (this.counter >= this.border) {
                 this.flag = false;
                 this.counter = 0;
@@ -122,6 +129,15 @@ const catchedByOctopus = {
         if (this.counter >= this.border && currentDiver.alive) {
             this.counter = 0;
             this.flag = false;
+            if (isTime) {
+                divers[1].alive = true;
+                divers[1].currentInd = 0;
+                divers[2].alive = true;
+                divers[2].currentInd = 1;
+                divers[0].alive = true;
+                divers[0].currentInd = 2;
+                ui.score = 0;
+            }
         }
     }
 };
@@ -171,7 +187,7 @@ const leftButton = {
     action() {
         if (this.flag) {
             this.flag = false;
-            if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag) {
+            if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime) {
                 currentDiver.moveLeft();
             }
         }
@@ -195,7 +211,7 @@ const rightButton = {
     action() {
         if (this.flag) {
             this.flag = false;
-            if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag) {
+            if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime) {
                 currentDiver.moveRight();
             }
         }
@@ -226,11 +242,12 @@ const gameAButton = {
             this.flag = false;
             ui.setGameA();
             currentGameLabel = ui.gameLabel;
-            octopusMovementParams.border = 10;
+            octopusMovementParams.border = 12;
             restart();
+            isTime = false;
+            isAlarm = false;
             octopus.moveB = false;
         }
-        // ...
     },
     draw() {
         if (this.flag) {
@@ -257,9 +274,10 @@ const gameBButton = {
             currentGameLabel = ui.gameLabel;
             octopusMovementParams.border = 6;
             restart();
+            isTime = false;
+            isAlarm = false;
             octopus.moveB = true;
         }
-        // ...
     },
     draw() {
         if (this.flag) {
@@ -280,8 +298,13 @@ const timeButton = {
     flag: false,
     drawingObj: ui.pressedTimeButton,
     action() {
-        this.flag = false;
-        // ...
+        if (this.flag) {
+            this.flag = false;
+            isAlarm = false;
+            isTime = true;
+            restart();
+        }
+        // включить демонстрационный вариант игры
     }, draw() {
         if (this.flag) {
             ctx.drawImage(
@@ -359,19 +382,39 @@ window.addEventListener('mouseup', function(event) {
     }
 });
 
+
+var demoCounter = 0;
+var demoMoveRight = true;
+
 setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     if (isGame) {
-        ctx.drawImage(
-            currentGameLabel['image'], currentGameLabel['x'], currentGameLabel['y'],
-            currentGameLabel['width'], currentGameLabel['height']
-        );
+        if (!isTime) {
+            ctx.drawImage(
+                currentGameLabel['image'], currentGameLabel['x'], currentGameLabel['y'],
+                currentGameLabel['width'], currentGameLabel['height']
+            );
+        }
         
         // отрисовка нажатых кнопок
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].draw();
+        }
+
+        if (isTime) {
+            demoCounter++;
+
+            if ((demoCounter % 55 == 0) && !catchedByOctopus.flag && !collision.flag) {
+                if (ui.score == 0)
+                    currentDiver.moveRight();
+                else 
+                    currentDiver.moveLeft();
+                if (currentDiver.isGetMoneyPos() && !getMoneyAnim.flag && !collision.flag) {
+                    getMoneyAnim.flag = true;
+                }
+            }
         }
 
         // отрисовка дайверов
@@ -384,16 +427,16 @@ setInterval(function() {
                 );
             }
         }
-        
-        // отрисовка щупальцев
-        var tentacles = octopus.tentacles;
-        for (let tentacle of tentacles) {
-            ctx.drawImage(tentacle['image'], tentacle['x'], tentacle['y'], tentacle['width'], tentacle['height']);
-        }
 
         // различные анимации
         for (let i = 0; i < animations.length; i++) {
             animations[i].animate();
+        }
+
+        // отрисовка щупальцев
+        var tentacles = octopus.tentacles;
+        for (let tentacle of tentacles) {
+            ctx.drawImage(tentacle['image'], tentacle['x'], tentacle['y'], tentacle['width'], tentacle['height']);
         }
 
         // обработка получения 200 и 500 очков с возрождением 
@@ -409,7 +452,15 @@ setInterval(function() {
         }
 
         // отрисовка цифр
-        var digits = ui.digits;
+        var digits;
+        if (isTime) {
+            let timeIndicator = ui.timeIndicator;
+            ctx.drawImage(timeIndicator['image'], timeIndicator['x'], timeIndicator['y'], timeIndicator['width'], timeIndicator['height']);
+            ctx.drawImage(twoPoints['image'], twoPoints['x'], twoPoints['y'], twoPoints['width'], twoPoints['height']);
+            digits = ui.time;
+        } else {
+            digits = ui.digits;
+        }
         for (let key of Object.keys(digits)) {
             var digit = digits[key];
             ctx.drawImage(digit['image'], digit['x'], digit['y'], digit['width'], digit['height']);

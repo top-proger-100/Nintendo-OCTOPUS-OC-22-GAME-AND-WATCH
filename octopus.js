@@ -30,9 +30,6 @@ class Octopus {
         this.#tentacle1 = new Tentacle(1);
         this.#tentacle2 = new Tentacle(2);
         this.#tentacles = [this.#tentacle1, new Tentacle(4), new Tentacle(3), new Tentacle(5)];
-        let randomV = Math.floor(Math.random() * 4);
-        this.#tentacles[randomV].minLeftState = 1;
-        this.#tentacleOneFixedState = randomV;
     }
 
     /**
@@ -98,5 +95,10 @@ class Octopus {
 
     set moveB(flag) {
         this.#moveB = flag;
+        if (this.#moveB) {
+            let randomV = Math.floor(Math.random() * 4);
+            this.#tentacles[randomV].minLeftState = 1;
+            this.#tentacleOneFixedState = randomV;
+        }
     }
 }

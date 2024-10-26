@@ -13,8 +13,21 @@ class UI {
     #pressedGameAButton;
     #pressedGameBButton;
     #pressedTimeButton;
+    #twoPoints;
+    #isPm;
+    #am;
+    #pm;
 
     constructor() {
+        this.#isPm = false;
+
+        const am = new Image();
+        am.src = './спрайты/интерфейс/дп.png';
+        this.#am = {'x': 605, 'y': 205, 'width': 50, 'height': 25, 'image': am };
+        const pm = new Image();
+        pm.src = './спрайты/интерфейс/пп.png';
+        this.#pm = {'x': 605, 'y': 240, 'width': 50, 'height': 25, 'image': pm };
+
         const digit1 = new Image();
         digit1.src = './спрайты/интерфейс/0.png';
         const digit2 = new Image();
@@ -63,6 +76,37 @@ class UI {
         this.#pressedGameAButton = {'x': 1212, 'y': 82, 'width': 70, 'height': 35, 'image': pressedChooseButton};
         this.#pressedGameBButton = {'x': 1212, 'y': 180, 'width': 70, 'height': 35, 'image': pressedChooseButton};
         this.#pressedTimeButton = {'x': 1212, 'y': 278, 'width': 70, 'height': 35, 'image': pressedChooseButton};
+
+        const twoPoints = new Image();
+        twoPoints.src = './спрайты/интерфейс/двоеточие.png';
+        this.#twoPoints = { 'x': 760, 'y': 210, 'width': 20, 'height': 50, 'image': twoPoints };
+    }
+
+    get time() {
+        let now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        if (hours > 12) {
+            this.#isPm = true;
+            hours = hours % 12;
+        } else if (hours == 12) {
+            this.#isPm = true;
+        } else if (hours == 0) {
+            hours = 12;
+            this.#isPm = false;
+        } else {
+            this.#isPm = false;
+        }
+        let str = String(hours)+String(minutes).padStart(2, '0');
+        this.#translateDigits(str);
+        return this.#digits;
+    }
+
+    get timeIndicator() {
+        if (this.#isPm) {
+            return this.#pm;
+        } 
+        return this.#am;
     }
 
     get digits() {
@@ -77,24 +121,29 @@ class UI {
         return this.#firstBackground;
     }
 
-    #translateScore() {
-        let strScore = String(this.#score);
-        for (let i = 0; i < strScore.length; i++) {
-            this.#digits[strScore.length-1-i]['image'] = this.#allDigits[strScore[i]];
+    #translateDigits(value) {
+        let str = String(value);
+        for (let i = 0; i < str.length; i++) {
+            this.#digits[str.length-1-i]['image'] = this.#allDigits[str[i]];
         }
     }
 
     addScore() {
         if (this.#score < 999) {
             this.#score++;
-            this.#translateScore();
+            this.#translateDigits(this.#score);
         }
     }
 
     set score(score) {
         if (score >= 0 && score <= 999) {
             this.#score = score;
-            this.#translateScore();
+            for (let i = 0; i < Object.keys(this.#digits).length; i++) {
+                this.#digits[i]['image'] = this.#noneDigit;
+            }
+            this.#translateDigits(this.#score);
+        } else {
+            this.#score = 0;
         }
     }
 
@@ -124,6 +173,10 @@ class UI {
 
     get gameLabel() {
         return this.#currentGameLabel;
+    }
+
+    get twoPoints() {
+        return this.#twoPoints;
     }
 
     setGameA() {
