@@ -29,6 +29,7 @@ class Octopus {
      * @type {number} - идекс массива, по которому определяем щупальце, скрывающееся не до конца
      */
     #tentacleOneFixedState;
+    #moveSound;
 
     constructor() {
         this.#currentTentacle = 0;
@@ -36,6 +37,7 @@ class Octopus {
         this.#tentacle1 = new Tentacle(1);
         this.#tentacle2 = new Tentacle(2);
         this.#tentacles = [this.#tentacle1, new Tentacle(4), new Tentacle(3), new Tentacle(5)];
+        this.#moveSound = new Audio('./звуки/щупальце.mp4');
     }
 
     /**
@@ -64,6 +66,10 @@ class Octopus {
         }
         this.#tentacles[this.#currentTentacle % this.#tentacles.length].updateCurrentState();
         this.#currentTentacle++;
+    }
+
+    moveSound() {
+        this.#moveSound.play();
     }
 
     /** Возвращает массив с текущими изображениями щупальцев (см класс Tentacle)

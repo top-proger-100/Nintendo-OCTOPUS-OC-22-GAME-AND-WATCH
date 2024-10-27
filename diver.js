@@ -11,6 +11,9 @@ class Diver {
     #leftBorder;
     #isWithBag;
     #catchedPos;
+    #moneySound;
+    #collisionedSound;
+    #catchedSound;
 
     constructor() {
         this.#curInd = 0;
@@ -76,6 +79,10 @@ class Diver {
             0: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage0 },
             1: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage1 }
         }
+
+        this.#moneySound = new Audio('./звуки/сокровище.mp4');
+        this.#collisionedSound = new Audio('./звуки/коснулись.mp4');
+        this.#catchedSound = new Audio('./звуки/поймали.mp4');
     }
 
     setFirst() {
@@ -187,5 +194,17 @@ class Diver {
         if (ind >= 0 && ind < Object.keys(this.#diversStates).length) {
             this.#curInd = ind;
         }
+    }
+
+    moneySound() {
+        this.#moneySound.play();
+    }
+
+    collisionSound() {
+        this.#collisionedSound.play();
+    }
+
+    catchedSound() {
+        this.#catchedSound.play();
     }
 }

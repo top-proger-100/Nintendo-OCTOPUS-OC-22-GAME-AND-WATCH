@@ -7,10 +7,25 @@ var isAlarm = false;
 var isChangeTime = true;
 var isChangeAlarm = false;
 
+var isShowNote = false;
+var isShowMiniOctopus = false;
+
+var delay = 20;
+var isReappearance = false;
+
+var isIntervalPlay = false;
+
+var demoCounter = 0;
+var demoMoveRight = true;
+var changeTimeStep = 0;
+
 var ui = new UI();
 var background = ui.firstBackground;
 var currentGameLabel = ui.gameLabel;
 var twoPoints = ui.twoPoints;
+var alarmSignalLabels = ui.alarmSignalLabels;
+var miniOctopusLabel = ui.miniOctopusLabel;
+var noteLabel = ui.noteLabel;
 
 var octopus = new Octopus();
 
@@ -38,6 +53,9 @@ const getMoneyAnim = {
             }
             if (this.counter == this.addMoneyStep) {
                 ui.addScore();
+                if (!isAlarm && !isTime && !isChangeAlarm) {
+                    currentDiver.moneySound();
+                }
             }
             if (this.counter >= this.border) {
                 this.counter = 0;
@@ -67,8 +85,8 @@ const onBoatParams = {
 // объект отвечает за смену кадра анимации опустошения мешка
 const bagEmpty = {
     counter: 0,
-    border: 30,
-    divider: 10,
+    border: 45,
+    divider: 15,
     flag: false,
     // проигрывание анимации при возвращении в лодку с начислением 3х очков
     animate() {
@@ -82,6 +100,9 @@ const bagEmpty = {
             currentDiver.bagAnimationMovement();
             if (!isTime) {
                 ui.addScore();
+                if (!isAlarm && !isTime && !isChangeAlarm) {
+                    currentDiver.moneySound();
+                }
             } else {
                 ui.score = 0;
             }
@@ -101,6 +122,9 @@ const octopusMovementParams = {
     animate() {
         if (this.counter >= this.border) {
             octopus.move();
+            if (!isAlarm && !isTime && !isChangeAlarm) {
+                octopus.moveSound();
+            }
             this.counter = 0;
         }
         if (!bagEmpty.flag && !catchedByOctopus.flag && !collision.flag && 
@@ -113,8 +137,8 @@ const octopusMovementParams = {
 // объект отвечает за смену кадра анимации "барахтания" дайвера
 const catchedByOctopus = {
     counter: 0,
-    border: 140,
-    divider: 20,
+    border: 210,
+    divider: 30,
     flag: false,
     // анимация "убийства" дайвера
     animate() {
@@ -127,6 +151,9 @@ const catchedByOctopus = {
         }
         if (this.counter > 0 && this.counter % this.divider == 0 && this.counter < this.border) {
             thirdDiver.setNextCatchedDiver();
+            if (!isAlarm && !isTime && !isChangeAlarm) {
+                thirdDiver.catchedSound();
+            }
         }
         if (this.counter >= this.border && currentDiver.alive) {
             this.counter = 0;
@@ -152,6 +179,9 @@ const collision = {
     // коллизия щупальца с дайвером
     animate() {
         if (octopus.checkCollision(currentDiver.currentInd)) {
+            if (!isAlarm && !isTime && !isChangeAlarm && !this.flag) {
+                thirdDiver.collisionSound();
+            }
             this.flag = true;
         }
         if (this.flag) {
@@ -180,19 +210,50 @@ const collision = {
 const alarmPlayParams = {
     counter: 0,
     border: 3000,
+    divider: 50,
     flag: false,
+    isPlaySound: true,
+    isShowLabels: true,
+    draw() {
+        if (this.isShowLabels && this.flag) {
+            for (let label of alarmSignalLabels) {
+                ctx.drawImage(label['image'], label['x'], label['y'],
+                    label['width'], label['height']);
+            }
+        }
+    },
+    sound() {
+        if ((isChangeTime || isAlarm || isTime) && this.flag) {
+            if (this.counter % this.divider == 0 && this.isPlaySound) {
+                ui.alarmSoundPlay();
+                if (!this.isShowLabels) {
+                    this.isShowLabels = true;
+                } else {
+                    this.isShowLabels = false;
+                }
+            }
+        }
+    },
     animate() {
         if (ui.checkAlarm()) {
             this.flag = true;
+            isShowMiniOctopus = true;
+            isShowNote = false;
         }
-        if ((isChangeTime || isAlarm || isTime) && this.flag) {
-            if (this.counter % 60 == 0) {
-                ui.alarmSoundPlay();
-            }
+        if (!this.isPlaySound) {
+            isShowMiniOctopus = false;
+            isShowNote = true;
+        } 
+        if (this.flag) {
             this.counter++;
         }
         if (this.counter >= this.border) {
             this.flag = false;
+            this.isPlaySound = true;
+            this.isShowLabels = false;
+            this.counter = 0;
+            isShowMiniOctopus = false;
+            isShowNote = true;
         }
     }
 };
@@ -299,6 +360,8 @@ const gameAButton = {
         isChangeTime = false;
         isChangeAlarm = false;
         octopus.moveB = false;
+        isShowMiniOctopus = false;
+        isShowNote = false;
     },
     draw() {
         ctx.drawImage(
@@ -340,6 +403,8 @@ const gameBButton = {
         isChangeTime = false;
         isChangeAlarm = false;
         octopus.moveB = true;
+        isShowMiniOctopus = false;
+        isShowNote = false;
     },
     draw() {
         ctx.drawImage(
@@ -365,6 +430,9 @@ const timeButton = {
     },
     action() {
         this.flag = false;
+        if(isGame) {
+            isShowNote = true;
+        }
         if (!isTime) {
             restart();
         }
@@ -373,7 +441,11 @@ const timeButton = {
         isChangeTime = false;
         isChangeAlarm = false;
         octopusMovementParams.border = 12;
-        alarmPlayParams.flag = false;
+        if (alarmPlayParams.flag) {
+            alarmPlayParams.isPlaySound = false;
+            alarmPlayParams.isShowLabels = false;
+        }
+        isShowMiniOctopus = false;
     }, draw() {
         ctx.drawImage(
             this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
@@ -409,7 +481,14 @@ const alarmButton = {
         }
         isChangeAlarm = true;
         octopusMovementParams.border = 12;
-    }, draw() {
+        alarmPlayParams.counter = 0;
+        alarmPlayParams.flag = false;
+        alarmPlayParams.isPlaySound = true;
+        alarmPlayParams.isShowLabels = false;
+        isShowMiniOctopus = true;
+        isShowNote = true;
+    }, 
+    draw() {
         if (this.flag) {
             ctx.drawImage(
                 this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
@@ -419,6 +498,7 @@ const alarmButton = {
     }
 };
 
+// поведение при нажатии кнопки сброса
 const resetButton = {
     coords: {
         xLeft: 1330,
@@ -445,7 +525,12 @@ const resetButton = {
         isChangeAlarm = false;
         background = ui.firstBackground;
         octopusMovementParams.border = 12;
-        alarmPlayParams.flag = false;
+        if (alarmPlayParams.flag) {
+            alarmPlayParams.isPlaySound = false;
+            alarmPlayParams.isShowLabels = false;
+        }
+        isShowMiniOctopus = false;
+        isShowNote = false;
     }, draw() {
         if (this.flag) {
             ctx.drawImage(
@@ -474,9 +559,6 @@ function restart() {
     octopus = new Octopus();
     ui.score = 0;
 }
-
-var delay = 20;
-var isReappearance = false;
 
 window.addEventListener('keyup', function(event) {
     if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
@@ -525,16 +607,28 @@ window.addEventListener('mouseup', function(event) {
             }
         }
     }
+    if (!isIntervalPlay) {
+        isIntervalPlay = true;
+        setInterval(function() {
+            alarmPlayParams.sound();
+        }, delay);
+    }
 });
-
-
-var demoCounter = 0;
-var demoMoveRight = true;
-var changeTimeStep = 0;
 
 setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+    alarmPlayParams.draw();
+
+    if (isShowNote) {
+        ctx.drawImage(noteLabel['image'], noteLabel['x'], noteLabel['y'],
+            noteLabel['width'], noteLabel['height']);
+    }
+    if (isShowMiniOctopus) {
+        ctx.drawImage(miniOctopusLabel['image'], miniOctopusLabel['x'], miniOctopusLabel['y'],
+            miniOctopusLabel['width'], miniOctopusLabel['height']);
+    }
 
     // отрисовка нажатых кнопок
     for (let i = 0; i < buttons.length; i++) {

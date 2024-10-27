@@ -12,9 +12,13 @@ class UI {
     #twoPoints;
     #clock;
     #alarm;
+    #alarmLabels;
+    #miniOctopusLabel;
 
     #am;
     #pm;
+
+    #alarmAudio;
 
 
     constructor() {
@@ -96,6 +100,23 @@ class UI {
         const twoPoints = new Image();
         twoPoints.src = './спрайты/интерфейс/двоеточие.png';
         this.#twoPoints = { 'x': 760, 'y': 210, 'width': 20, 'height': 50, 'image': twoPoints };
+
+        this.#alarmAudio = new Audio('./звуки/будильник.mp4');
+
+        const topLightning = new Image();
+        topLightning.src = './спрайты/интерфейс/верхняя молния.png';
+        const bottomLightning = new Image();
+        bottomLightning.src = './спрайты/интерфейс/нижняя молния.png';
+        const note = new Image();
+        note.src = './спрайты/интерфейс/нота.png';
+        const miniOctopusLabel = new Image();
+        miniOctopusLabel.src = './спрайты/интерфейс/маленький осьминог.png';
+        this.#miniOctopusLabel = {'x': 960, 'y': 210, 'width': 95, 'height': 90, 'image': miniOctopusLabel};
+        this.#alarmLabels = {
+            top: {'x': 905, 'y': 195, 'width': 50, 'height': 25, 'image': topLightning},
+            bottom: {'x': 910, 'y': 270, 'width': 45, 'height': 20, 'image': bottomLightning},
+            note: {'x': 912, 'y': 230, 'width': 35, 'height': 25, 'image': note},
+        };
     }
 
     #getDigitsFromObj(obj) {
@@ -138,7 +159,7 @@ class UI {
 
     #addMinute(obj) {
         if (obj.minutes == 59) {
-            addHour(obj);
+            this.#addHour(obj);
             obj.minutes = -1;
         }
         obj.minutes += 1
@@ -180,8 +201,7 @@ class UI {
     }
 
     alarmSoundPlay() {
-        // звук будильника
-        console.log('yes');
+        this.#alarmAudio.play();
     }
 
     get timeIndicator() {
@@ -282,5 +302,17 @@ class UI {
 
     setGameB() {
         this.#currentGameLabel = this.#gameBLabel;
+    }
+
+    get alarmSignalLabels() {
+        return [this.#alarmLabels.top, this.#alarmLabels.bottom, this.#alarmLabels.note];
+    }
+
+    get miniOctopusLabel() {
+        return this.#miniOctopusLabel;
+    }
+
+    get noteLabel() {
+        return this.#alarmLabels.note;
     }
 }
