@@ -396,7 +396,7 @@ const gameBButton = {
         this.flag = false;
         ui.setGameB();
         currentGameLabel = ui.gameLabel;
-        octopusMovementParams.border = 6;
+        octopusMovementParams.border = 8;
         restart();
         isTime = false;
         isAlarm = false;
