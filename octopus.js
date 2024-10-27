@@ -21,8 +21,14 @@ class Octopus {
      * @type {Tentacle} - второе щупальце
      */
     #tentacle2;
+    /**
+     * @type {boolean} - индикатор движения при режиме Б
+     */
     #moveB;
-    #tentacleOneFixedState // переназвать!!!! отвечает за игру б и нужна для того чтобы не срабатывало два раза при одном щупальце
+    /**
+     * @type {number} - идекс массива, по которому определяем щупальце, скрывающееся не до конца
+     */
+    #tentacleOneFixedState;
 
     constructor() {
         this.#currentTentacle = 0;
@@ -40,6 +46,7 @@ class Octopus {
         if (this.#tentacles[0].currentState == 0) {
             this.#tentacles[0] = Math.floor(Math.random() * 2) == 0 ? this.#tentacle1 : this.#tentacle2;
         }
+        // при игре Б какое-то из щупалец не до конца убирается, оставляя одно деление
         if (this.#moveB) {
             if (this.#currentTentacle % this.#tentacles.length == this.#tentacleOneFixedState && 
                 this.#tentacles[this.#tentacleOneFixedState].currentState == 2 && this.#tentacles[this.#tentacleOneFixedState].moveUpCicle) {
@@ -88,11 +95,15 @@ class Octopus {
      */
     setCollisionPos() {
         this.#tentacles[2].currentState = 2;
+        this.#tentacles[2].changeNextStateInc();
         if (this.#tentacles[1].currentState < 2) {
             this.#tentacles[1].currentState = 2;
         }
     }
 
+    /**
+     * @param {boolean} flag - режим движения при игре Б
+     */
     set moveB(flag) {
         this.#moveB = flag;
         if (this.#moveB) {

@@ -1,25 +1,36 @@
 class UI {
+    #score;
     #digits;
-    #score = 0;
-    #pressedButtonLeft;
-    #pressedButtonRight;
-    #background;
-    #firstBackground;
     #allDigits;
     #noneDigit;
+    #buttons;
+    #background;
+    #firstBackground;
     #gameALabel;
     #gameBLabel;
     #currentGameLabel;
-    #pressedGameAButton;
-    #pressedGameBButton;
-    #pressedTimeButton;
     #twoPoints;
-    #isPm;
+    #clock;
+    #alarm;
+
     #am;
     #pm;
 
+
     constructor() {
-        this.#isPm = false;
+        this.#score = 0;
+
+        this.#clock = {
+            isPm: false,
+            hours: 12,
+            minutes: 0
+        };
+
+        this.#alarm = {
+            isPm: true,
+            hours: 12,
+            minutes: 0
+        };
 
         const am = new Image();
         am.src = './спрайты/интерфейс/дп.png';
@@ -50,15 +61,26 @@ class UI {
 
         const pressedButton = new Image();
         pressedButton.src = "./спрайты/интерфейс/нажатая кнопка.png"; 
-        this.#pressedButtonLeft = { 'x': 100, 'y': 557, 'width': 100, 'height': 100, 'image': pressedButton };
-        this.#pressedButtonRight = { 'x': 1240, 'y': 557, 'width': 100, 'height': 100, 'image': pressedButton };
+        const pressedChooseButton = new Image();
+        pressedChooseButton.src = './спрайты/интерфейс/нажатая кнопка выбора.png';
+        const pressedTimeAlarmButton = new Image();
+        pressedTimeAlarmButton.src = './спрайты/интерфейс/нажатая кнопка (время).png';
+        this.#buttons = {
+            left: { 'x': 100, 'y': 557, 'width': 100, 'height': 100, 'image': pressedButton },
+            right: { 'x': 1240, 'y': 557, 'width': 100, 'height': 100, 'image': pressedButton },
+            gameA: {'x': 1212, 'y': 82, 'width': 70, 'height': 35, 'image': pressedChooseButton},
+            gameB: {'x': 1212, 'y': 180, 'width': 70, 'height': 35, 'image': pressedChooseButton},
+            time: {'x': 1212, 'y': 278, 'width': 70, 'height': 35, 'image': pressedChooseButton},
+            alarm: {'x': 1330, 'y': 135, 'width': 30, 'height': 30, 'image': pressedTimeAlarmButton},
+            reset: {'x': 1330, 'y': 240, 'width': 30, 'height': 30, 'image': pressedTimeAlarmButton}
+        };
 
         const background = new Image();
         background.src = './спрайты/фон.png';
         this.#background = background;
 
         const firstBackground = new Image();
-        firstBackground.src = './спрайты/первоначальный фон.jpg';
+        firstBackground.src = './спрайты/первоначальный фон.png';
         this.#firstBackground = firstBackground;
 
         const gameA = new Image();
@@ -71,41 +93,108 @@ class UI {
 
         this.#currentGameLabel = this.#gameALabel;
 
-        const pressedChooseButton = new Image();
-        pressedChooseButton.src = './спрайты/интерфейс/нажатая кнопка выбора.png';
-        this.#pressedGameAButton = {'x': 1212, 'y': 82, 'width': 70, 'height': 35, 'image': pressedChooseButton};
-        this.#pressedGameBButton = {'x': 1212, 'y': 180, 'width': 70, 'height': 35, 'image': pressedChooseButton};
-        this.#pressedTimeButton = {'x': 1212, 'y': 278, 'width': 70, 'height': 35, 'image': pressedChooseButton};
-
         const twoPoints = new Image();
         twoPoints.src = './спрайты/интерфейс/двоеточие.png';
         this.#twoPoints = { 'x': 760, 'y': 210, 'width': 20, 'height': 50, 'image': twoPoints };
     }
 
-    get time() {
-        let now = new Date();
-        let hours = now.getHours();
-        let minutes = now.getMinutes();
-        if (hours > 12) {
-            this.#isPm = true;
-            hours = hours % 12;
-        } else if (hours == 12) {
-            this.#isPm = true;
-        } else if (hours == 0) {
-            hours = 12;
-            this.#isPm = false;
-        } else {
-            this.#isPm = false;
-        }
-        let str = String(hours)+String(minutes).padStart(2, '0');
+    #getDigitsFromObj(obj) {
+        let str = String(obj.hours)+String(obj.minutes).padStart(2, '0');
         this.#translateDigits(str);
         return this.#digits;
     }
 
+    get time() {
+        return this.#getDigitsFromObj(this.#clock);
+    }
+
+    get alarmTime() {
+        return this.#getDigitsFromObj(this.#alarm);
+    }
+
+    set hours(h) {
+        if (h >= 1 && h <= 12) {
+            this.#clock.hours = h;
+        }
+    }
+
+    set minutes(m) {
+        if (m >= 0 && m <= 59) {
+            this.#clock.minutes = m;
+        }
+    }
+
+    set alarmHours(h) {
+        if (h >= 1 && h <= 12) {
+            this.#alarm.hours = h;
+        }
+    }
+
+    set alarmMinutes(m) {
+        if (m >= 0 && m <= 59) {
+            this.#alarm.minutes = m;
+        }
+    }
+
+    #addMinute(obj) {
+        if (obj.minutes == 59) {
+            addHour(obj);
+            obj.minutes = -1;
+        }
+        obj.minutes += 1
+    }
+
+    addMinute() {
+        this.#addMinute(this.#clock);
+    }
+
+    addAlarmMinute() {
+       this.#addMinute(this.#alarm);
+    }
+
+    #addHour(obj) {
+        if (obj.hours == 11) {
+            if (obj.isPm) {
+                obj.isPm = false;
+            } else {
+                obj.isPm = true;
+            }
+        } else if (obj.hours == 12) {
+            obj.hours = 0;
+        }
+        obj.hours += 1;
+    }
+
+    addHour() {
+        this.#addHour(this.#clock);
+    }
+
+    addAlarmHour() {
+        this.#addHour(this.#alarm);
+    }
+
+    checkAlarm() {
+        return this.#clock.hours == this.#alarm.hours && 
+        this.#clock.minutes == this.#alarm.minutes
+         && this.#clock.isPm == this.#alarm.isPm;
+    }
+
+    alarmSoundPlay() {
+        // звук будильника
+        console.log('yes');
+    }
+
     get timeIndicator() {
-        if (this.#isPm) {
+        if (this.#clock.isPm) {
             return this.#pm;
-        } 
+        }
+        return this.#am;
+    }
+
+    get alarmIndicator() {
+        if (this.#alarm.isPm) {
+            return this.#pm;
+        }
         return this.#am;
     }
 
@@ -126,6 +215,9 @@ class UI {
         for (let i = 0; i < str.length; i++) {
             this.#digits[str.length-1-i]['image'] = this.#allDigits[str[i]];
         }
+        for (let i = str.length; i < Object.keys(this.#digits).length; i++) {
+            this.#digits[i]['image'] = this.#noneDigit;
+        }
     }
 
     addScore() {
@@ -138,9 +230,6 @@ class UI {
     set score(score) {
         if (score >= 0 && score <= 999) {
             this.#score = score;
-            for (let i = 0; i < Object.keys(this.#digits).length; i++) {
-                this.#digits[i]['image'] = this.#noneDigit;
-            }
             this.#translateDigits(this.#score);
         } else {
             this.#score = 0;
@@ -152,23 +241,31 @@ class UI {
     }
 
     get pressedButtonLeft() {
-        return this.#pressedButtonLeft;
+        return this.#buttons.left;
     }
     
     get pressedButtonRight() {
-        return this.#pressedButtonRight;
+        return this.#buttons.right;
     }
 
     get pressedGameAButton() {
-        return this.#pressedGameAButton;
+        return this.#buttons.gameA;
     }
 
     get pressedGameBButton() {
-        return this.#pressedGameBButton;
+        return this.#buttons.gameB;
     }
 
     get pressedTimeButton() {
-        return this.#pressedTimeButton;
+        return this.#buttons.time;
+    }
+
+    get pressedAlarmButton() {
+        return this.#buttons.alarm;
+    }
+
+    get pressedResetButton() {
+        return this.#buttons.reset;
     }
 
     get gameLabel() {

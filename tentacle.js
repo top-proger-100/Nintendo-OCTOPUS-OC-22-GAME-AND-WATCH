@@ -16,9 +16,18 @@ class Tentacle {
      * @type {Array<number>} - массив позиций дайвера, который соответствует конкретному щупальцу 
      */
     #collisionValues;
+    /**
+     * @type {number} - левая граница, до которой доходит прячущееся щупальце
+     */
     #minLeftState;
+    /**
+     * @type {boolean} - щупальце раскрывается или прячется (нужно для игры Б)
+     */
     #moveUpCicle;
-
+    /**
+     * 
+     * @param {number} ind - номер щупальца
+     */
     constructor(ind) {
         this.#currentState = 0;
         this.#nextStateInc = 1;
@@ -68,6 +77,13 @@ class Tentacle {
         }
     }
 
+    /** Данный метод меняет направление движения
+     * @return {void}
+     */
+    changeNextStateInc() {
+        this.#nextStateInc *= -1;
+    }
+
     /** Данный метод меняет состояние щупальца
      * @return {void}
      */
@@ -83,13 +99,16 @@ class Tentacle {
             this.#moveUpCicle = true;
         }
     }
-
+ 
+    /** Щупальце раскрывается или прячется (нужно для игры Б)
+     * @return {boolean}
+     */
     get moveUpCicle() {
         return this.#moveUpCicle;
     }
     
-    /**
-     * @return {Object.<string, any>} - атрибуты щупальца
+    /** Атрибуты щупальца
+     * @return {Object.<string, any>}
      */
     get currentStatePicture() {
         return this.#states[this.#currentState];
@@ -125,12 +144,18 @@ class Tentacle {
         return this.#collisionValues;
     }
 
+    /**
+     * @param {number} state - минимальное левое состояние щупальца
+     */
     set minLeftState(state) {
         if (state >= 0 && state <= Object.keys(this.#states).length - 1) {
             this.#minLeftState = state;
         }
     }
 
+    /** Возвращает минимальное левое состояние щупальца
+     * @return {number} 
+     */
     get minLeftState() {
         return this.#minLeftState;
     }

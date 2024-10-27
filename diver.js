@@ -3,20 +3,28 @@ class Diver {
     #diversStatesWithoutBag;
     #diversStatesWithBag;
     #diversCatchedStates;
-    #curInd = 0;
-    #isAlive = true;
-    #isFirst = false;
-    #firstBoatPos = 2;
-    #lastPos = 7;
-    #leftBorder = 0;
-    #isWithBag = false;
+    #curInd;
+    #isAlive;
+    #isFirst;
+    #firstBoatPos;
+    #lastPos;
+    #leftBorder;
+    #isWithBag;
     #catchedPos;
 
     constructor() {
+        this.#curInd = 0;
+        this.#isAlive = true;
+        this.#isFirst = false;
+        this.#firstBoatPos = 2;
+        this.#lastPos = 7;
+        this.#leftBorder = 0;
+        this.#isWithBag = false;
+
         this.#diversStatesWithoutBag = {
-            0: { 'x': 550, 'y': 210, 'width': 50, 'height': 60, 'image': null },
-            1: { 'x': 500, 'y': 210, 'width': 50, 'height': 60, 'image': null },
-            2: { 'x': 415, 'y': 210, 'width': 60, 'height': 60, 'image': null },
+            0: { 'x': 555, 'y': 210, 'width': 45, 'height': 60, 'image': null },
+            1: { 'x': 500, 'y': 210, 'width': 45, 'height': 60, 'image': null },
+            2: { 'x': 417, 'y': 210, 'width': 55, 'height': 60, 'image': null },
             3: { 'x': 425, 'y': 320, 'width': 85, 'height': 85, 'image': null },
             4: { 'x': 455, 'y': 440, 'width': 75, 'height': 90, 'image': null },
             5: { 'x': 550, 'y': 505, 'width': 80, 'height': 85, 'image': null },
@@ -37,9 +45,9 @@ class Diver {
         image10.src = './спрайты/водолазы/10.png';
 
         this.#diversStatesWithBag = {
-            0: { 'x': 550, 'y': 210, 'width': 50, 'height': 60, 'image': null },
-            1: { 'x': 500, 'y': 210, 'width': 50, 'height': 60, 'image': null },
-            2: { 'x': 415, 'y': 210, 'width': 88, 'height': 60, 'image': null },
+            0: { 'x': 550, 'y': 210, 'width': 45, 'height': 60, 'image': null },
+            1: { 'x': 500, 'y': 210, 'width': 45, 'height': 60, 'image': null },
+            2: { 'x': 417, 'y': 210, 'width': 83, 'height': 60, 'image': null },
             3: { 'x': 425, 'y': 320, 'width': 105, 'height': 85, 'image': null },
             4: { 'x': 450, 'y': 440, 'width': 80, 'height': 100, 'image': null },
             5: { 'x': 555, 'y': 505, 'width': 85, 'height': 90, 'image': null },

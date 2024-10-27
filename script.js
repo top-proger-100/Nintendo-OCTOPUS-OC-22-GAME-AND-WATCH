@@ -4,6 +4,8 @@ const ctx = canvas.getContext('2d');
 var isGame = false;
 var isTime = false;
 var isAlarm = false;
+var isChangeTime = true;
+var isChangeAlarm = false;
 
 var ui = new UI();
 var background = ui.firstBackground;
@@ -129,7 +131,7 @@ const catchedByOctopus = {
         if (this.counter >= this.border && currentDiver.alive) {
             this.counter = 0;
             this.flag = false;
-            if (isTime) {
+            if (isTime || isAlarm || isChangeAlarm) {
                 divers[1].alive = true;
                 divers[1].currentInd = 0;
                 divers[2].alive = true;
@@ -173,8 +175,30 @@ const collision = {
         }
     }
 };
-var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctopus, bagEmpty, onBoatParams];
 
+// отвечает за проигрывание будильника
+const alarmPlayParams = {
+    counter: 0,
+    border: 3000,
+    flag: false,
+    animate() {
+        if (ui.checkAlarm()) {
+            this.flag = true;
+        }
+        if ((isChangeTime || isAlarm || isTime) && this.flag) {
+            if (this.counter % 60 == 0) {
+                ui.alarmSoundPlay();
+            }
+            this.counter++;
+        }
+        if (this.counter >= this.border) {
+            this.flag = false;
+        }
+    }
+};
+var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctopus, bagEmpty, onBoatParams, alarmPlayParams];
+
+// поведение при нажатии левой красной кнопки
 const leftButton = {
     coords: {
         xLeft: 100, 
@@ -184,21 +208,29 @@ const leftButton = {
     },
     flag: false,
     drawingObj: ui.pressedButtonLeft,
+    setFlags() {
+        this.flag = true;
+    },
     action() {
-        if (this.flag) {
-            this.flag = false;
-            if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime) {
-                currentDiver.moveLeft();
-            }
+        this.flag = false;
+        if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag
+             && !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
+            currentDiver.moveLeft();
+        }
+        if (isChangeTime) {
+            ui.addHour();
+        }
+        if (isChangeAlarm) {
+            ui.addAlarmHour();
         }
     },
     draw() {
-        if (this.flag) {
-            ctx.drawImage(this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
-                this.drawingObj['width'], this.drawingObj['height']);
-        }
+        ctx.drawImage(this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+            this.drawingObj['width'], this.drawingObj['height']);
     }
 }
+
+// поведение при нажатии правой красной кнопки
 const rightButton = {
     coords: {
         xLeft: 1240,
@@ -208,26 +240,34 @@ const rightButton = {
     },
     flag: false,
     drawingObj: ui.pressedButtonRight,
+    setFlags() {
+        this.flag = true;
+    },
     action() {
-        if (this.flag) {
-            this.flag = false;
-            if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime) {
-                currentDiver.moveRight();
-            }
+        this.flag = false;
+        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime
+             && !isAlarm && !isChangeAlarm && !isChangeTime) {
+            currentDiver.moveRight();
+        }
+        if (isChangeTime) {
+            ui.addMinute();
+        }
+        if (isChangeAlarm) {
+            ui.addAlarmMinute();
         }
     }, 
     draw() {
-        if (this.flag) {
-            ctx.drawImage(
-                this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
-                this.drawingObj['width'], this.drawingObj['height']
-            );
-            if (currentDiver.isGetMoneyPos() && !getMoneyAnim.flag && !collision.flag) {
-                getMoneyAnim.flag = true;
-            }
+        ctx.drawImage(
+            this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+            this.drawingObj['width'], this.drawingObj['height']
+        );
+        if (currentDiver.isGetMoneyPos() && !getMoneyAnim.flag && !collision.flag) {
+            getMoneyAnim.flag = true;
         }
     }
 };
+
+// поведение при нажатии кнопки "Игра А"
 const gameAButton = {
     coords: {
         xLeft: 1212,
@@ -237,27 +277,38 @@ const gameAButton = {
     },
     flag: false,
     drawingObj: ui.pressedGameAButton,
+    setFlags() {
+        this.flag = true;
+    },
     action() {
-        if (this.flag) {
-            this.flag = false;
-            ui.setGameA();
-            currentGameLabel = ui.gameLabel;
-            octopusMovementParams.border = 12;
-            restart();
-            isTime = false;
-            isAlarm = false;
-            octopus.moveB = false;
+        if (isChangeAlarm) {
+            ui.alarmHours = 12;
+            ui.alarmMinutes = 0;
         }
+        if (isChangeTime) {
+            ui.hours = 12;
+            ui.minutes = 0;
+        }
+        this.flag = false;
+        ui.setGameA();
+        currentGameLabel = ui.gameLabel;
+        octopusMovementParams.border = 12;
+        restart();
+        isTime = false;
+        isAlarm = false;
+        isChangeTime = false;
+        isChangeAlarm = false;
+        octopus.moveB = false;
     },
     draw() {
-        if (this.flag) {
-            ctx.drawImage(
-                this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
-                this.drawingObj['width'], this.drawingObj['height']
-            );
-        }
+        ctx.drawImage(
+            this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+            this.drawingObj['width'], this.drawingObj['height']
+        );
     }
 }
+
+// поведение при нажатии кнопки "Игра Б"
 const gameBButton = {
     coords: {
         xLeft: 1212,
@@ -267,27 +318,38 @@ const gameBButton = {
     },
     flag: false,
     drawingObj: ui.pressedGameBButton,
+    setFlags() {
+        this.flag = true;
+    },
     action() {
-        if (this.flag) {
-            this.flag = false;
-            ui.setGameB();
-            currentGameLabel = ui.gameLabel;
-            octopusMovementParams.border = 6;
-            restart();
-            isTime = false;
-            isAlarm = false;
-            octopus.moveB = true;
+        if (isChangeAlarm) {
+            ui.alarmHours = 12;
+            ui.alarmMinutes = 0;
         }
+        if (isChangeTime) {
+            ui.hours = 12;
+            ui.minutes = 0;
+        }
+        this.flag = false;
+        ui.setGameB();
+        currentGameLabel = ui.gameLabel;
+        octopusMovementParams.border = 6;
+        restart();
+        isTime = false;
+        isAlarm = false;
+        isChangeTime = false;
+        isChangeAlarm = false;
+        octopus.moveB = true;
     },
     draw() {
-        if (this.flag) {
-            ctx.drawImage(
-                this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
-                this.drawingObj['width'], this.drawingObj['height']
-            );
-        }
+        ctx.drawImage(
+            this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+            this.drawingObj['width'], this.drawingObj['height']
+        );
     }
 }
+
+// поведение при нажатии кнопки "Время"
 const timeButton = {
     coords: {
         xLeft: 1212,
@@ -297,14 +359,93 @@ const timeButton = {
     },
     flag: false,
     drawingObj: ui.pressedTimeButton,
+    setFlags() {
+        this.flag = true;
+        isAlarm = true;
+    },
     action() {
-        if (this.flag) {
-            this.flag = false;
-            isAlarm = false;
-            isTime = true;
+        this.flag = false;
+        if (!isTime) {
             restart();
         }
-        // включить демонстрационный вариант игры
+        isAlarm = false;
+        isTime = true;
+        isChangeTime = false;
+        isChangeAlarm = false;
+        octopusMovementParams.border = 12;
+        alarmPlayParams.flag = false;
+    }, draw() {
+        ctx.drawImage(
+            this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+            this.drawingObj['width'], this.drawingObj['height']
+        );
+    }
+}
+
+// поведение при нажатии кнопки установки времени будильника
+const alarmButton = {
+    coords: {
+        xLeft: 1330,
+        xRight: 1360,
+        yTop: 135,
+        yBottom: 165,
+    },
+    flag: false,
+    drawingObj: ui.pressedAlarmButton,
+    setFlags() {
+        this.flag = true;
+    },
+    action() {
+        if (isChangeTime) {
+            ui.hours = 12;
+            ui.minutes = 0;
+        }
+        this.flag = false;
+        isAlarm = false;
+        isTime = false;
+        isChangeTime = false;
+        if (!isChangeAlarm) {
+            restart();
+        }
+        isChangeAlarm = true;
+        octopusMovementParams.border = 12;
+    }, draw() {
+        if (this.flag) {
+            ctx.drawImage(
+                this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
+                this.drawingObj['width'], this.drawingObj['height']
+            );
+        }
+    }
+};
+
+const resetButton = {
+    coords: {
+        xLeft: 1330,
+        xRight: 1360,
+        yTop: 240,
+        yBottom: 270,
+    },
+    flag: false,
+    drawingObj: ui.pressedResetButton,
+    setFlags() {
+        this.flag = true;
+    },
+    action() {
+        ui.hours = 12;
+        ui.minutes = 0;
+        ui.alarmHours = 12;
+        ui.alarmMinutes = 0;
+        this.flag = false;
+        isAlarm = false;
+        isTime = false;
+        isChangeTime = true;
+        restart();
+        isGame = false;
+        isChangeAlarm = false;
+        background = ui.firstBackground;
+        octopusMovementParams.border = 12;
+        alarmPlayParams.flag = false;
     }, draw() {
         if (this.flag) {
             ctx.drawImage(
@@ -314,9 +455,9 @@ const timeButton = {
         }
     }
 }
-var buttons = [leftButton, rightButton, gameAButton, gameBButton, timeButton];
+var buttons = [leftButton, rightButton, gameAButton, gameBButton, timeButton, alarmButton, resetButton];
 
-
+// функция перезапуска
 function restart() {
     background = ui.background;
     isGame = true;
@@ -339,12 +480,14 @@ var isReappearance = false;
 
 window.addEventListener('keyup', function(event) {
     if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag) {
+        if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag &&
+             !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
             currentDiver.moveLeft();
         }
         leftButton.flag = false;
     } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag) {
+        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag &&
+             !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
             currentDiver.moveRight();
         }
         rightButton.flag = false;
@@ -368,7 +511,7 @@ window.addEventListener('mousedown', function(event) {
         for(let i = 0; i < buttons.length; i++) {
             if (clickX >= buttons[i].coords.xLeft && clickX <= buttons[i].coords.xRight
                 && clickY >= buttons[i].coords.yTop && clickY <= buttons[i].coords.yBottom) {
-                buttons[i].flag = true;
+                buttons[i].setFlags();
             }   
         }
     }
@@ -377,7 +520,9 @@ window.addEventListener('mousedown', function(event) {
 window.addEventListener('mouseup', function(event) {
     if (event.which == 1) {
         for(let i = 0; i < buttons.length; i++) {
-            buttons[i].action();
+            if (buttons[i].flag) {
+                buttons[i].action();
+            }
         }
     }
 });
@@ -385,28 +530,31 @@ window.addEventListener('mouseup', function(event) {
 
 var demoCounter = 0;
 var demoMoveRight = true;
+var changeTimeStep = 0;
 
 setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
+    // отрисовка нажатых кнопок
+    for (let i = 0; i < buttons.length; i++) {
+        if (buttons[i].flag) {
+            buttons[i].draw();
+        }
+    }
+
     if (isGame) {
-        if (!isTime) {
+        if (!isTime && !isAlarm && !isChangeAlarm) {
             ctx.drawImage(
                 currentGameLabel['image'], currentGameLabel['x'], currentGameLabel['y'],
                 currentGameLabel['width'], currentGameLabel['height']
             );
         }
-        
-        // отрисовка нажатых кнопок
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].draw();
-        }
 
-        if (isTime) {
+        // проигрывание демонстрации
+        if (isTime || isAlarm || isChangeAlarm) {
             demoCounter++;
-
-            if ((demoCounter % 55 == 0) && !catchedByOctopus.flag && !collision.flag) {
+            if ((demoCounter % 56 == 0) && !catchedByOctopus.flag && !collision.flag) {
                 if (ui.score == 0)
                     currentDiver.moveRight();
                 else 
@@ -450,20 +598,33 @@ setInterval(function() {
         } else if (score != 200 && score != 500){
             isReappearance = false;
         }
+    }
 
-        // отрисовка цифр
-        var digits;
-        if (isTime) {
-            let timeIndicator = ui.timeIndicator;
-            ctx.drawImage(timeIndicator['image'], timeIndicator['x'], timeIndicator['y'], timeIndicator['width'], timeIndicator['height']);
-            ctx.drawImage(twoPoints['image'], twoPoints['x'], twoPoints['y'], twoPoints['width'], twoPoints['height']);
-            digits = ui.time;
-        } else {
-            digits = ui.digits;
+    if (!isChangeTime)
+        changeTimeStep++;
+        if (changeTimeStep == 3000) {
+            changeTimeStep = 0;
+            ui.addMinute();
         }
-        for (let key of Object.keys(digits)) {
-            var digit = digits[key];
-            ctx.drawImage(digit['image'], digit['x'], digit['y'], digit['width'], digit['height']);
-        }
+
+    // отрисовка цифр
+    var digits;
+    let middayInd;
+    if (isChangeAlarm || isAlarm) {
+        digits = ui.alarmTime;
+        middayInd = ui.alarmIndicator;
+    } else if (isChangeTime || isTime) {
+        digits = ui.time;
+        middayInd = ui.timeIndicator;
+    } else {
+        digits = ui.digits;
+    }
+    if (isTime || isChangeTime || isAlarm || isChangeAlarm) {
+        ctx.drawImage(middayInd['image'], middayInd['x'], middayInd['y'], middayInd['width'], middayInd['height']);
+        ctx.drawImage(twoPoints['image'], twoPoints['x'], twoPoints['y'], twoPoints['width'], twoPoints['height']);
+    }
+    for (let key of Object.keys(digits)) {
+        var digit = digits[key];
+        ctx.drawImage(digit['image'], digit['x'], digit['y'], digit['width'], digit['height']);
     }
 }, delay);
