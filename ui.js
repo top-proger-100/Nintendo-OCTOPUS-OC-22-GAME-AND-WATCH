@@ -133,6 +133,18 @@ class UI {
         return this.#getDigitsFromObj(this.#alarm);
     }
 
+    setStartClock() {
+        this.#clock.hours = 12;
+        this.#clock.minutes = 0;
+        this.#clock.isPm = false;
+    }
+
+    setStartAlarm() {
+        this.#alarm.hours = 12;
+        this.#alarm.minutes = 0;
+        this.#clock.isPm = true;
+    }
+
     set hours(h) {
         if (h >= 1 && h <= 12) {
             this.#clock.hours = h;

@@ -72,10 +72,6 @@ class Octopus {
         this.#moveSound.play();
     }
 
-    moveSoundStop() {
-        this.#moveSound.pause();
-    }
-
     /** Возвращает массив с текущими изображениями щупальцев (см класс Tentacle)
      * @return {Array<Tentacle>} 
      */

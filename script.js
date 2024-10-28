@@ -1,29 +1,68 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-var isGame = false;
-var isTime = false;
-var isAlarm = false;
-var isChangeTime = true;
-var isChangeAlarm = false;
+// игровые флаги (режимы)
+const gameParams = {
+    isGame: false, // отвечает за проигрывание действий, связанных с игрой и демонстрацией игры
+    isTime: false, // просмотр времени
+    isAlarm: false, // просмотр времени будильника
+    isChangeTime: true, // режим сброса (изменения времени)
+    isChangeAlarm: false, // режим изменения будильника
 
-var isShowNote = false;
-var isShowMiniOctopus = false;
-
-var delay = 20;
-var isReappearance = false;
-
-var isIntervalPlay = false;
-
-var demoCounter = 0;
-var demoMoveRight = true;
-var changeTimeStep = 0;
+    delay: 20,
+    alramPlayDelay: 1000,
+    isReappearance: false,
+    isAlarmIntervalPlay: false,
+    changeTimeStep: 0,
+    changeTimeBorder: 3000,
+    resetAllFlags() {
+        this.isGame = false;
+        this.isTime = false;
+        this.isAlarm = false;
+        this.isChangeTime = false;
+        this.isChangeAlarm = false;
+    },
+    setChangeAlarm() {
+        this.resetAllFlags();
+        this.isGame = true;
+        this.isChangeAlarm = true;
+    },
+    setChangeTime() {
+        this.resetAllFlags();
+        this.isChangeTime = true;
+    },
+    setIsTime() {
+        this.resetAllFlags();
+        this.isGame = true;
+        this.isTime = true;
+    },
+    setIsGame() {
+        this.resetAllFlags();
+        this.isGame = true;
+    },
+    setIsArarm() {
+        this.resetAllFlags();
+        this.isAlarm = true;
+        this.isGame = true;
+    },
+    isGameAOrB() {
+        return !this.isAlarm && !this.isTime && !this.isChangeAlarm && !this.isChangeTime;
+    },
+    isDemo() {
+        return this.isTime || this.isAlarm || this.isChangeAlarm;
+    },
+    isAlarmTime() {
+        return this.isChangeAlarm || this.isAlarm;
+    }, 
+    isClockTime() {
+        return this.isChangeTime || this.isTime;
+    },
+};
 
 var ui = new UI();
 var background = ui.firstBackground;
 var currentGameLabel = ui.gameLabel;
 var twoPoints = ui.twoPoints;
-var alarmSignalLabels = ui.alarmSignalLabels;
 var miniOctopusLabel = ui.miniOctopusLabel;
 var noteLabel = ui.noteLabel;
 
@@ -53,7 +92,7 @@ const getMoneyAnim = {
             }
             if (this.counter == this.addMoneyStep) {
                 ui.addScore();
-                if (!isAlarm && !isTime && !isChangeAlarm) {
+                if (gameParams.isGameAOrB()) {
                     currentDiver.moneySound();
                 }
             }
@@ -98,9 +137,9 @@ const bagEmpty = {
         } 
         if (this.counter > 0 && this.counter % this.divider == 0) {
             currentDiver.bagAnimationMovement();
-            if (!isTime) {
+            if (!gameParams.isTime) {
                 ui.addScore();
-                if (!isAlarm && !isTime && !isChangeAlarm) {
+                if (gameParams.isGameAOrB()) {
                     currentDiver.moneySound();
                 }
             } else {
@@ -122,7 +161,7 @@ const octopusMovementParams = {
     animate() {
         if (this.counter >= this.border) {
             octopus.move();
-            if (!isAlarm && !isTime && !isChangeAlarm) {
+            if (gameParams.isGameAOrB()) {
                 octopus.moveSound();
             }
             this.counter = 0;
@@ -151,21 +190,15 @@ const catchedByOctopus = {
         }
         if (this.counter > 0 && this.counter % this.divider == 0 && this.counter < this.border) {
             thirdDiver.setNextCatchedDiver();
-            if (!isAlarm && !isTime && !isChangeAlarm) {
+            if (gameParams.isGameAOrB()) {
                 thirdDiver.catchedSound();
             }
         }
         if (this.counter >= this.border && currentDiver.alive) {
             this.counter = 0;
             this.flag = false;
-            if (isTime || isAlarm || isChangeAlarm) {
-                divers[1].alive = true;
-                divers[1].currentInd = 0;
-                divers[2].alive = true;
-                divers[2].currentInd = 1;
-                divers[0].alive = true;
-                divers[0].currentInd = 2;
-                ui.score = 0;
+            if (gameParams.isDemo()) {
+                startDivers();
             }
         }
     }
@@ -179,7 +212,7 @@ const collision = {
     // коллизия щупальца с дайвером
     animate() {
         if (octopus.checkCollision(currentDiver.currentInd)) {
-            if (!isAlarm && !isTime && !isChangeAlarm && !this.flag) {
+            if (gameParams.isGameAOrB() && !this.flag) {
                 thirdDiver.collisionSound();
             }
             this.flag = true;
@@ -210,21 +243,23 @@ const collision = {
 const alarmPlayParams = {
     counter: 0,
     border: 3000,
-    divider: 50,
     flag: false,
     isPlaySound: true,
     isShowLabels: true,
+    isShowNote: false,
+    isShowMiniOctopus: false,
+    alarmSignalLabels: ui.alarmSignalLabels,
     draw() {
         if (this.isShowLabels && this.flag) {
-            for (let label of alarmSignalLabels) {
+            for (let label of this.alarmSignalLabels) {
                 ctx.drawImage(label['image'], label['x'], label['y'],
                     label['width'], label['height']);
             }
         }
     },
     sound() {
-        if ((isChangeTime || isAlarm || isTime) && this.flag) {
-            if (this.counter % this.divider == 0 && this.isPlaySound) {
+        if (gameParams.isDemo() && this.flag) {
+            if (this.isPlaySound) {
                 ui.alarmSoundPlay();
                 if (!this.isShowLabels) {
                     this.isShowLabels = true;
@@ -234,30 +269,57 @@ const alarmPlayParams = {
             }
         }
     },
+    setStartParams() {
+        this.flag = false;
+        this.isPlaySound = true;
+        this.isShowLabels = false;
+        this.counter = 0;
+    },
+    hideNoteAndMiniOctopus() {
+        this.isShowMiniOctopus = false;
+        this.isShowNote = false;
+    },
+    showNoteAndMiniOctopus() {
+        this.isShowMiniOctopus = true;
+        this.isShowNote = true;
+    },
     animate() {
-        if (ui.checkAlarm()) {
+        if (ui.checkAlarm() && this.isPlaySound) {
             this.flag = true;
-            isShowMiniOctopus = true;
-            isShowNote = false;
+            this.isShowMiniOctopus = true;
+            this.isShowNote = false;
         }
-        if (!this.isPlaySound) {
-            isShowMiniOctopus = false;
-            isShowNote = true;
-        } 
         if (this.flag) {
             this.counter++;
         }
         if (this.counter >= this.border) {
-            this.flag = false;
-            this.isPlaySound = true;
-            this.isShowLabels = false;
-            this.counter = 0;
-            isShowMiniOctopus = false;
-            isShowNote = true;
+            this.setStartParams();
+            this.isShowMiniOctopus = false;
+            this.isShowNote = true;
         }
     }
 };
-var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctopus, bagEmpty, onBoatParams, alarmPlayParams];
+
+// проигрывание демонстрации
+const demoAnim = {
+    counter: 0,
+    divider: 56,
+    animate() {
+        if (gameParams.isDemo()) {
+            this.counter++;
+            if ((this.counter % this.divider == 0) && !catchedByOctopus.flag && !collision.flag) {
+                if (ui.score == 0)
+                    currentDiver.moveRight();
+                else 
+                    currentDiver.moveLeft();
+                if (currentDiver.isGetMoneyPos() && !getMoneyAnim.flag && !collision.flag) {
+                    getMoneyAnim.flag = true;
+                }
+            }
+        }
+    }
+};
+var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctopus, bagEmpty, onBoatParams, alarmPlayParams, demoAnim];
 
 // поведение при нажатии левой красной кнопки
 const leftButton = {
@@ -275,7 +337,7 @@ const leftButton = {
     action() {
         this.flag = false;
         if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag
-             && !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
+             && gameParams.isGameAOrB()) {
             currentDiver.moveLeft();
         }
         if (isChangeTime) {
@@ -306,8 +368,7 @@ const rightButton = {
     },
     action() {
         this.flag = false;
-        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && !isTime
-             && !isAlarm && !isChangeAlarm && !isChangeTime) {
+        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && gameParams.isGameAOrB()) {
             currentDiver.moveRight();
         }
         if (isChangeTime) {
@@ -343,25 +404,19 @@ const gameAButton = {
     },
     action() {
         if (isChangeAlarm) {
-            ui.alarmHours = 12;
-            ui.alarmMinutes = 0;
+            ui.setStartAlarm();
         }
         if (isChangeTime) {
-            ui.hours = 12;
-            ui.minutes = 0;
+            ui.setStartClock();
         }
         this.flag = false;
         ui.setGameA();
         currentGameLabel = ui.gameLabel;
         octopusMovementParams.border = 12;
         restart();
-        isTime = false;
-        isAlarm = false;
-        isChangeTime = false;
-        isChangeAlarm = false;
+        gameParams.setIsGame();
+        alarmPlayParams.hideNoteAndMiniOctopus();
         octopus.moveB = false;
-        isShowMiniOctopus = false;
-        isShowNote = false;
     },
     draw() {
         ctx.drawImage(
@@ -386,25 +441,19 @@ const gameBButton = {
     },
     action() {
         if (isChangeAlarm) {
-            ui.alarmHours = 12;
-            ui.alarmMinutes = 0;
+            ui.setStartAlarm();
         }
         if (isChangeTime) {
-            ui.hours = 12;
-            ui.minutes = 0;
+            ui.setStartClock();
         }
         this.flag = false;
         ui.setGameB();
         currentGameLabel = ui.gameLabel;
         octopusMovementParams.border = 8;
         restart();
-        isTime = false;
-        isAlarm = false;
-        isChangeTime = false;
-        isChangeAlarm = false;
+        gameParams.setIsGame();
         octopus.moveB = true;
-        isShowMiniOctopus = false;
-        isShowNote = false;
+        alarmPlayParams.hideNoteAndMiniOctopus();
     },
     draw() {
         ctx.drawImage(
@@ -426,26 +475,25 @@ const timeButton = {
     drawingObj: ui.pressedTimeButton,
     setFlags() {
         this.flag = true;
-        isAlarm = true;
+        gameParams.setIsAlarm();
     },
     action() {
         this.flag = false;
-        if(isGame) {
-            isShowNote = true;
+        if(gameParams.isGame) {
+            alarmPlayParams.isShowNote = true;
         }
-        if (!isTime) {
+        if (!gameParams.isTime) {
             restart();
         }
-        isAlarm = false;
-        isTime = true;
-        isChangeTime = false;
-        isChangeAlarm = false;
+        gameParams.setIsTime();
+        alarmPlayParams.isShowMiniOctopus = false;
         octopusMovementParams.border = 12;
         if (alarmPlayParams.flag) {
             alarmPlayParams.isPlaySound = false;
+            alarmPlayParams.isShowNote = true;
+            alarmPlayParams.isShowMiniOctopus = false;
             alarmPlayParams.isShowLabels = false;
         }
-        isShowMiniOctopus = false;
     }, draw() {
         ctx.drawImage(
             this.drawingObj['image'], this.drawingObj['x'], this.drawingObj['y'],
@@ -469,24 +517,16 @@ const alarmButton = {
     },
     action() {
         if (isChangeTime) {
-            ui.hours = 12;
-            ui.minutes = 0;
+            ui.setStartClock();
         }
         this.flag = false;
-        isAlarm = false;
-        isTime = false;
-        isChangeTime = false;
         if (!isChangeAlarm) {
             restart();
         }
-        isChangeAlarm = true;
+        gameParams.setChangeAlarm();
+        alarmPlayParams.showNoteAndMiniOctopus();
         octopusMovementParams.border = 12;
-        alarmPlayParams.counter = 0;
-        alarmPlayParams.flag = false;
-        alarmPlayParams.isPlaySound = true;
-        alarmPlayParams.isShowLabels = false;
-        isShowMiniOctopus = true;
-        isShowNote = true;
+        alarmPlayParams.setStartParams();
     }, 
     draw() {
         if (this.flag) {
@@ -512,25 +552,16 @@ const resetButton = {
         this.flag = true;
     },
     action() {
-        ui.hours = 12;
-        ui.minutes = 0;
-        ui.alarmHours = 12;
-        ui.alarmMinutes = 0;
+        ui.setStartClock();
+        ui.setStartAlarm();
         this.flag = false;
-        isAlarm = false;
-        isTime = false;
-        isChangeTime = true;
         restart();
-        isGame = false;
-        isChangeAlarm = false;
+        gameParams.setChangeTime();
+        alarmPlayParams.isPlaySound = false;
+        alarmPlayParams.isShowLabels = false;
+        alarmPlayParams.hideNoteAndMiniOctopus();
         background = ui.firstBackground;
         octopusMovementParams.border = 12;
-        if (alarmPlayParams.flag) {
-            alarmPlayParams.isPlaySound = false;
-            alarmPlayParams.isShowLabels = false;
-        }
-        isShowMiniOctopus = false;
-        isShowNote = false;
     }, draw() {
         if (this.flag) {
             ctx.drawImage(
@@ -542,46 +573,60 @@ const resetButton = {
 }
 var buttons = [leftButton, rightButton, gameAButton, gameBButton, timeButton, alarmButton, resetButton];
 
-// функция перезапуска
-function restart() {
-    background = ui.background;
-    isGame = true;
+function startDivers() {
     divers[1].alive = true;
     divers[1].currentInd = 0;
     divers[2].alive = true;
     divers[2].currentInd = 1;
     divers[0].alive = true;
     divers[0].currentInd = 2;
+    ui.score = 0;
+}
+
+// функция перезапуска
+function restart() {
+    background = ui.background;
+    startDivers();
     for (let i = 0; i < animations.length; i++) {
         animations[i].flag = false;
         animations[i].counter = 0;
     }
     octopus = new Octopus();
-    ui.score = 0;
 }
 
 window.addEventListener('keyup', function(event) {
     if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        if (!getMoneyAnim.flag && !catchedByOctopus.flag && !bagEmpty.flag && !collision.flag &&
-             !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
-            currentDiver.moveLeft();
-        }
-        leftButton.flag = false;
+        leftButton.action();
     } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag &&
-             !isTime && !isAlarm && !isChangeAlarm && !isChangeTime) {
-            currentDiver.moveRight();
-        }
-        rightButton.flag = false;
+        rightButton.action();
+    } else if (event.key == '1') {
+        gameAButton.action();
+    } else if (event.key == '2') {
+        gameBButton.action();
+    } else if (event.key == '3') {
+        timeButton.action();
+    } else if (event.key == '4') {
+        alarmButton.action();
+    } else if (event.key == '5') {
+        resetButton.action();
     }
-
 });
 
 window.addEventListener('keydown', function(event) {
     if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        leftButton.flag = true;
+        leftButton.setFlags();
     } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        rightButton.flag = true;
+        rightButton.setFlags();
+    } else if (event.key == '1') {
+        gameAButton.setFlags();
+    } else if (event.key == '2') {
+        gameBButton.setFlags();
+    } else if (event.key == '3') {
+        timeButton.setFlags();
+    } else if (event.key == '4') {
+        alarmButton.setFlags();
+    } else if (event.key == '5') {
+        resetButton.setFlags();
     }
 });
 
@@ -607,11 +652,11 @@ window.addEventListener('mouseup', function(event) {
             }
         }
     }
-    if (!isIntervalPlay) {
-        isIntervalPlay = true;
+    if (!gameParams.isAlarmIntervalPlay) {
+        gameParams.isAlarmIntervalPlay = true;
         setInterval(function() {
             alarmPlayParams.sound();
-        }, delay);
+        }, gameParams.alramPlayDelay);
     }
 });
 
@@ -621,11 +666,11 @@ setInterval(function() {
 
     alarmPlayParams.draw();
 
-    if (isShowNote) {
+    if (alarmPlayParams.isShowNote) {
         ctx.drawImage(noteLabel['image'], noteLabel['x'], noteLabel['y'],
             noteLabel['width'], noteLabel['height']);
     }
-    if (isShowMiniOctopus) {
+    if (alarmPlayParams.isShowMiniOctopus) {
         ctx.drawImage(miniOctopusLabel['image'], miniOctopusLabel['x'], miniOctopusLabel['y'],
             miniOctopusLabel['width'], miniOctopusLabel['height']);
     }
@@ -637,26 +682,12 @@ setInterval(function() {
         }
     }
 
-    if (isGame) {
-        if (!isTime && !isAlarm && !isChangeAlarm) {
+    if (gameParams.isGame) {
+        if (gameParams.isGameAOrB()) {
             ctx.drawImage(
                 currentGameLabel['image'], currentGameLabel['x'], currentGameLabel['y'],
                 currentGameLabel['width'], currentGameLabel['height']
             );
-        }
-
-        // проигрывание демонстрации
-        if (isTime || isAlarm || isChangeAlarm) {
-            demoCounter++;
-            if ((demoCounter % 56 == 0) && !catchedByOctopus.flag && !collision.flag) {
-                if (ui.score == 0)
-                    currentDiver.moveRight();
-                else 
-                    currentDiver.moveLeft();
-                if (currentDiver.isGetMoneyPos() && !getMoneyAnim.flag && !collision.flag) {
-                    getMoneyAnim.flag = true;
-                }
-            }
         }
 
         // отрисовка дайверов
@@ -683,37 +714,39 @@ setInterval(function() {
 
         // обработка получения 200 и 500 очков с возрождением 
         let score = ui.score;
-        if ((score == 200 || score == 500) && !isReappearance) {
+        if ((score == 200 || score == 500) && !gameParams.isReappearance) {
             divers[1].alive = true;
             divers[1].currentInd = 0;
             divers[2].alive = true;
             divers[2].currentInd = 1;
-            isReappearance = true;
+            gameParams.isReappearance = true;
         } else if (score != 200 && score != 500){
-            isReappearance = false;
+            gameParams.isReappearance = false;
         }
     }
 
-    if (!isChangeTime)
-        changeTimeStep++;
-        if (changeTimeStep == 3000) {
-            changeTimeStep = 0;
-            ui.addMinute();
-        }
+    // отсчитывание времени
+    if (!gameParams.isChangeTime) {
+        gameParams.changeTimeStep++;
+    }
+    if (gameParams.changeTimeStep == gameParams.changeTimeBorder) {
+        gameParams.changeTimeStep = 0;
+        ui.addMinute();
+    }
 
     // отрисовка цифр
     var digits;
     let middayInd;
-    if (isChangeAlarm || isAlarm) {
+    if (gameParams.isAlarmTime()) {
         digits = ui.alarmTime;
         middayInd = ui.alarmIndicator;
-    } else if (isChangeTime || isTime) {
+    } else if (gameParams.isClockTime()) {
         digits = ui.time;
         middayInd = ui.timeIndicator;
     } else {
         digits = ui.digits;
     }
-    if (isTime || isChangeTime || isAlarm || isChangeAlarm) {
+    if (!gameParams.isGameAOrB()) {
         ctx.drawImage(middayInd['image'], middayInd['x'], middayInd['y'], middayInd['width'], middayInd['height']);
         ctx.drawImage(twoPoints['image'], twoPoints['x'], twoPoints['y'], twoPoints['width'], twoPoints['height']);
     }
@@ -721,4 +754,4 @@ setInterval(function() {
         var digit = digits[key];
         ctx.drawImage(digit['image'], digit['x'], digit['y'], digit['width'], digit['height']);
     }
-}, delay);
+}, gameParams.delay);

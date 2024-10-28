@@ -1,6 +1,6 @@
 canvas {
     display: block;
-    margin: 0 auto;
+    margin: 30px auto;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -13,11 +13,4 @@ a, p {
     color:chocolate;
     font-size: 20px;
     user-select: none;
-}
-
-.man {
-    margin: 0 auto;
-    position: absolute;
-    bottom: 0;
-    width: 90%;
 }
