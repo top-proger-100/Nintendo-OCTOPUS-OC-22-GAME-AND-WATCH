@@ -401,10 +401,10 @@ const gameAButton = {
         this.flag = true;
     },
     action() {
-        if (isChangeAlarm) {
+        if (gameParams.isChangeAlarm) {
             ui.setStartAlarm();
         }
-        if (isChangeTime) {
+        if (gameParams.isChangeTime) {
             ui.setStartClock();
         }
         this.flag = false;
@@ -438,10 +438,10 @@ const gameBButton = {
         this.flag = true;
     },
     action() {
-        if (isChangeAlarm) {
+        if (gameParams.isChangeAlarm) {
             ui.setStartAlarm();
         }
-        if (isChangeTime) {
+        if (gameParams.isChangeTime) {
             ui.setStartClock();
         }
         this.flag = false;
@@ -520,8 +520,11 @@ const alarmButton = {
         }
         gameParams.setChangeAlarm();
         alarmPlayParams.showNoteAndMiniOctopus();
+        //alarmPlayParams.setStartParams();
         octopusMovementParams.border = 12;
-        alarmPlayParams.isPlaySound = false;
+        if (alarmPlayParams.flag) {
+            alarmPlayParams.isPlaySound = false;
+        }
     }, 
     draw() {
         if (this.flag) {
