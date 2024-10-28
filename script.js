@@ -40,10 +40,8 @@ const gameParams = {
         this.resetAllFlags();
         this.isGame = true;
     },
-    setIsArarm() {
-        this.resetAllFlags();
+    setIsAlarm() {
         this.isAlarm = true;
-        this.isGame = true;
     },
     isGameAOrB() {
         return !this.isAlarm && !this.isTime && !this.isChangeAlarm && !this.isChangeTime;
@@ -340,10 +338,10 @@ const leftButton = {
              && gameParams.isGameAOrB()) {
             currentDiver.moveLeft();
         }
-        if (isChangeTime) {
+        if (gameParams.isChangeTime) {
             ui.addHour();
         }
-        if (isChangeAlarm) {
+        if (gameParams.isChangeAlarm) {
             ui.addAlarmHour();
         }
     },
@@ -371,10 +369,10 @@ const rightButton = {
         if (!catchedByOctopus.flag && !bagEmpty.flag && !collision.flag && gameParams.isGameAOrB()) {
             currentDiver.moveRight();
         }
-        if (isChangeTime) {
+        if (gameParams.isChangeTime) {
             ui.addMinute();
         }
-        if (isChangeAlarm) {
+        if (gameParams.isChangeAlarm) {
             ui.addAlarmMinute();
         }
     }, 
@@ -479,9 +477,7 @@ const timeButton = {
     },
     action() {
         this.flag = false;
-        if(gameParams.isGame) {
-            alarmPlayParams.isShowNote = true;
-        }
+        alarmPlayParams.isShowNote = true;
         if (!gameParams.isTime) {
             restart();
         }
@@ -491,7 +487,6 @@ const timeButton = {
         if (alarmPlayParams.flag) {
             alarmPlayParams.isPlaySound = false;
             alarmPlayParams.isShowNote = true;
-            alarmPlayParams.isShowMiniOctopus = false;
             alarmPlayParams.isShowLabels = false;
         }
     }, draw() {
@@ -516,17 +511,17 @@ const alarmButton = {
         this.flag = true;
     },
     action() {
-        if (isChangeTime) {
+        if (gameParams.isChangeTime) {
             ui.setStartClock();
         }
         this.flag = false;
-        if (!isChangeAlarm) {
+        if (!gameParams.isChangeAlarm) {
             restart();
         }
         gameParams.setChangeAlarm();
         alarmPlayParams.showNoteAndMiniOctopus();
         octopusMovementParams.border = 12;
-        alarmPlayParams.setStartParams();
+        alarmPlayParams.isPlaySound = false;
     }, 
     draw() {
         if (this.flag) {
@@ -557,8 +552,7 @@ const resetButton = {
         this.flag = false;
         restart();
         gameParams.setChangeTime();
-        alarmPlayParams.isPlaySound = false;
-        alarmPlayParams.isShowLabels = false;
+        alarmPlayParams.setStartParams();
         alarmPlayParams.hideNoteAndMiniOctopus();
         background = ui.firstBackground;
         octopusMovementParams.border = 12;
