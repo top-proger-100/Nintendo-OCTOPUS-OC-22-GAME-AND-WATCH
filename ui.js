@@ -1,25 +1,72 @@
 class UI {
+    /** 
+     * @type {number} - очки
+     */
     #score;
+    /** 
+     * @type {Object.<number, Object.<string, any>>} - 4 цифры, которые отображаются в игре
+     */
     #digits;
+    /** 
+     * @type {Image} - все изображения цифр
+     */
     #allDigits;
+    /**
+     * @type {Image} - прозрачная цифра
+     */
     #noneDigit;
+    /** 
+     * @type {Object.<string, Object.<string, any>>} - все кнопки
+     */
     #buttons;
+    /**
+     * @type {Image} - главное изрбражение
+     */
     #background;
+    /**
+     * @type {Image} - главное изображение при сбросе
+     */
     #firstBackground;
+    /** 
+     * @type {Object.<string, any>} - надпись "Игра А"
+     */
     #gameALabel;
+    /** 
+     * @type {Object.<string, any>} - надпись "Игра Б"
+     */
     #gameBLabel;
+    /** 
+     * @type {Object.<string, any>} - текущая надпись об игре
+     */
     #currentGameLabel;
+    /** 
+     * @type {Object.<string, any>} - двоеточие
+     */
     #twoPoints;
+    /**
+     * @type {Object.<string, any>} - объект часов, в котором представлен флаг пп и дп, часы и минуты
+     */
     #clock;
+    /**
+     * @type {Object.<string, any>} - объект будильника, в котором представлен флаг пп и дп, часы и минуты
+     */
     #alarm;
+    /**
+     * @type {Object.<string, Object.<string, any>>} - две молнии, нота и маленький осьминог
+     */
     #alarmLabels;
-    #miniOctopusLabel;
-
+    /**
+     * @type {Object.<string, any>} - до полудня
+     */
     #am;
+    /**
+     * @type {Object.<string, any>} - после полудня
+     */
     #pm;
-
+    /**
+     * @type {Audio} - звук будильника
+     */
     #alarmAudio;
-
 
     constructor() {
         this.#score = 0;
@@ -111,64 +158,62 @@ class UI {
         note.src = './спрайты/интерфейс/нота.png';
         const miniOctopusLabel = new Image();
         miniOctopusLabel.src = './спрайты/интерфейс/маленький осьминог.png';
-        this.#miniOctopusLabel = {'x': 960, 'y': 210, 'width': 95, 'height': 90, 'image': miniOctopusLabel};
         this.#alarmLabels = {
             top: {'x': 905, 'y': 195, 'width': 50, 'height': 25, 'image': topLightning},
             bottom: {'x': 910, 'y': 270, 'width': 45, 'height': 20, 'image': bottomLightning},
             note: {'x': 912, 'y': 230, 'width': 35, 'height': 25, 'image': note},
+            miniOctopusLabel: {'x': 960, 'y': 210, 'width': 95, 'height': 90, 'image': miniOctopusLabel}
         };
     }
 
+    /**
+     * Преобразование чисел в изображение
+     * @param {Object.<string, any>} obj - время или звонок
+     * @return {Object.<number, Object.<string, any>>}
+     */
     #getDigitsFromObj(obj) {
         let str = String(obj.hours)+String(obj.minutes).padStart(2, '0');
         this.#translateDigits(str);
         return this.#digits;
     }
 
+    /** Получение преобразованного времени часов
+     * @return {Object.<number, Object.<string, any>>}
+     */
     get time() {
         return this.#getDigitsFromObj(this.#clock);
     }
 
+    /** Получение преобразованного времени будильника
+     * @return {Object.<number, Object.<string, any>>}
+     */
     get alarmTime() {
         return this.#getDigitsFromObj(this.#alarm);
     }
 
+    /** Обнуление часов
+     * @return {void}
+     */
     setStartClock() {
         this.#clock.hours = 12;
         this.#clock.minutes = 0;
         this.#clock.isPm = false;
     }
 
+    /** Обнуление будильника
+     * @return {void}
+     */
     setStartAlarm() {
         this.#alarm.hours = 12;
         this.#alarm.minutes = 0;
         this.#clock.isPm = true;
     }
 
-    set hours(h) {
-        if (h >= 1 && h <= 12) {
-            this.#clock.hours = h;
-        }
-    }
-
-    set minutes(m) {
-        if (m >= 0 && m <= 59) {
-            this.#clock.minutes = m;
-        }
-    }
-
-    set alarmHours(h) {
-        if (h >= 1 && h <= 12) {
-            this.#alarm.hours = h;
-        }
-    }
-
-    set alarmMinutes(m) {
-        if (m >= 0 && m <= 59) {
-            this.#alarm.minutes = m;
-        }
-    }
-
+    /**
+     * Добавление минут
+     * @param {Object.<string, any>} obj - часы или будильник
+     * @return {void}
+     */
     #addMinute(obj) {
         if (obj.minutes == 59) {
             this.#addHour(obj);
@@ -177,14 +222,25 @@ class UI {
         obj.minutes += 1
     }
 
+    /** Добавление минут часам
+     * @return {void}
+     */
     addMinute() {
         this.#addMinute(this.#clock);
     }
 
+    /** Добавление минут будильнику
+     * @return {void}
+     */
     addAlarmMinute() {
        this.#addMinute(this.#alarm);
     }
 
+    /**
+     * Добавление часов 
+     * @param {Object.<string, any>} obj - часы или будильник
+     * @return {void}
+     */
     #addHour(obj) {
         if (obj.hours == 11) {
             if (obj.isPm) {
@@ -198,24 +254,43 @@ class UI {
         obj.hours += 1;
     }
 
+    /**
+     * Добавление часов времени
+     * @return {void}
+     */
     addHour() {
         this.#addHour(this.#clock);
     }
 
+    /** Добавление часов будильнику
+     * @return {void}
+     */
     addAlarmHour() {
         this.#addHour(this.#alarm);
     }
 
+    /**
+     * Возвращает признак совпадения времени на часах и времени будильнка
+     * @return {boolean}
+     */
     checkAlarm() {
         return this.#clock.hours == this.#alarm.hours && 
         this.#clock.minutes == this.#alarm.minutes
          && this.#clock.isPm == this.#alarm.isPm;
     }
 
+    /**
+     * Проигрывание времени будильника
+     * @return {void}
+     */
     alarmSoundPlay() {
         this.#alarmAudio.play();
     }
 
+    /**
+     * ПП или ДП для часов
+     * @return {Object.<string, any>}
+     */
     get timeIndicator() {
         if (this.#clock.isPm) {
             return this.#pm;
@@ -223,6 +298,10 @@ class UI {
         return this.#am;
     }
 
+    /**
+     * ПП или ДП для будильника
+     * @return {Object.<string, any>}
+     */
     get alarmIndicator() {
         if (this.#alarm.isPm) {
             return this.#pm;
@@ -230,20 +309,33 @@ class UI {
         return this.#am;
     }
 
+    /** Изображение текущих цифр на табло
+     * @return {Object.<number, Object.<string, any>>}
+     */
     get digits() {
         return this.#digits;
     }
 
+    /** Фон 
+     * @return {Image}
+     */
     get background() {
         return this.#background;
     }
 
+    /** Фон во время сброса
+     * @return {Image}
+     */
     get firstBackground() {
         return this.#firstBackground;
     }
 
-    #translateDigits(value) {
-        let str = String(value);
+    /**
+     * Преобразование числа в изображения цифр
+     * @param {string} str - стока, состоящая из цифр
+     * @return {void}
+     */
+    #translateDigits(str) {
         for (let i = 0; i < str.length; i++) {
             this.#digits[str.length-1-i]['image'] = this.#allDigits[str[i]];
         }
@@ -252,78 +344,129 @@ class UI {
         }
     }
 
+    /** Добавление очка
+     * @return {void}
+     */
     addScore() {
         if (this.#score < 999) {
             this.#score++;
-            this.#translateDigits(this.#score);
+            this.#translateDigits(String(this.#score));
         }
     }
 
+    /**
+     * @param {number} score - очки
+     */
     set score(score) {
         if (score >= 0 && score <= 999) {
             this.#score = score;
-            this.#translateDigits(this.#score);
+            this.#translateDigits(String(this.#score));
         } else {
             this.#score = 0;
         }
     }
 
+    /**
+     * @return {number}
+     */
     get score() {
         return this.#score;
     }
 
+    /** Левая нажатая кнопка
+     * @return {Object.<string, any>}
+     */
     get pressedButtonLeft() {
         return this.#buttons.left;
     }
     
+    /** Правая нажатая кнопка
+     * @return {Object.<string, any>}
+     */
     get pressedButtonRight() {
         return this.#buttons.right;
     }
 
+    /** Нажатая кнопка игры а
+     * @return {Object.<string, any>}
+     */
     get pressedGameAButton() {
         return this.#buttons.gameA;
     }
 
+    /** Нажатая кнопка игры б
+     * @return {Object.<string, any>}
+     */
     get pressedGameBButton() {
         return this.#buttons.gameB;
     }
 
+    /** Нажатая кнопка времени
+     * @return {Object.<string, any>}
+     */
     get pressedTimeButton() {
         return this.#buttons.time;
     }
 
+    /** Нажатая кнопка будильника
+     * @return {Object.<string, any>}
+     */
     get pressedAlarmButton() {
         return this.#buttons.alarm;
     }
 
+    /** Нажатая кнопка сброса
+     * @return {Object.<string, any>}
+     */
     get pressedResetButton() {
         return this.#buttons.reset;
     }
 
+    /** Текущая надпись игры
+     * @return {Object.<string, any>}
+     */
     get gameLabel() {
         return this.#currentGameLabel;
     }
 
+    /** двоеточие
+     * @return {Object.<string, any>}
+     */
     get twoPoints() {
         return this.#twoPoints;
     }
 
+    /** Установка надписи игры а
+     * @return {void}
+     */
     setGameA() {
         this.#currentGameLabel = this.#gameALabel;
     }
 
+    /** Установка надписи игры б
+     * @return {void}
+     */
     setGameB() {
         this.#currentGameLabel = this.#gameBLabel;
     }
 
+    /** Две молнии и нота
+     * @return {Array<Object.<string, any>>}
+     */
     get alarmSignalLabels() {
         return [this.#alarmLabels.top, this.#alarmLabels.bottom, this.#alarmLabels.note];
     }
 
+    /** Маленький осьминог
+     * @return {Object.<string, any>}
+     */
     get miniOctopusLabel() {
-        return this.#miniOctopusLabel;
+        return this.#alarmLabels.miniOctopusLabel;
     }
 
+    /** Нота
+     * @return {Object.<string, any>}
+     */
     get noteLabel() {
         return this.#alarmLabels.note;
     }

@@ -29,6 +29,9 @@ class Octopus {
      * @type {number} - идекс массива, по которому определяем щупальце, скрывающееся не до конца
      */
     #tentacleOneFixedState;
+    /**
+     * @type {Audio} - звук движения
+     */
     #moveSound;
 
     constructor() {
@@ -68,6 +71,10 @@ class Octopus {
         this.#currentTentacle++;
     }
 
+
+    /** Данный метод проигрывает звук движения щупальца
+     * @return {void}
+     */
     moveSound() {
         this.#moveSound.play();
     }

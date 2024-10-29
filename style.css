@@ -1,16 +1,24 @@
 canvas {
     display: block;
-    margin: 30px auto;
+    margin: 0 auto;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-a, p {
+a {
+    text-decoration: underline;
+    cursor: pointer;
     display: block;
     text-align: center;
     color:chocolate;
     font-size: 20px;
     user-select: none;
+}
+
+.labels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
 }

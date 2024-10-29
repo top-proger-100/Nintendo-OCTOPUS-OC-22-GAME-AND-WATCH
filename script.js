@@ -154,7 +154,7 @@ const bagEmpty = {
 // объект отвечает за смену кадра передвижения осьминога
 const octopusMovementParams = {
     counter: 0,
-    border: 10,
+    border: 14,
     // передвижение щупальцев
     animate() {
         if (this.counter >= this.border) {
@@ -256,14 +256,12 @@ const alarmPlayParams = {
         }
     },
     sound() {
-        if (gameParams.isDemo() && this.flag) {
-            if (this.isPlaySound) {
-                ui.alarmSoundPlay();
-                if (!this.isShowLabels) {
-                    this.isShowLabels = true;
-                } else {
-                    this.isShowLabels = false;
-                }
+        if (gameParams.isDemo() && this.flag && this.isPlaySound && (gameParams.isAlarm || gameParams.isTime)) {
+            ui.alarmSoundPlay();
+            if (!this.isShowLabels) {
+                this.isShowLabels = true;
+            } else {
+                this.isShowLabels = false;
             }
         }
     },
@@ -410,7 +408,7 @@ const gameAButton = {
         this.flag = false;
         ui.setGameA();
         currentGameLabel = ui.gameLabel;
-        octopusMovementParams.border = 12;
+        octopusMovementParams.border = 14;
         restart();
         gameParams.setIsGame();
         alarmPlayParams.hideNoteAndMiniOctopus();
@@ -447,7 +445,7 @@ const gameBButton = {
         this.flag = false;
         ui.setGameB();
         currentGameLabel = ui.gameLabel;
-        octopusMovementParams.border = 8;
+        octopusMovementParams.border = 9;
         restart();
         gameParams.setIsGame();
         octopus.moveB = true;
@@ -473,6 +471,9 @@ const timeButton = {
     drawingObj: ui.pressedTimeButton,
     setFlags() {
         this.flag = true;
+        if (gameParams.isChangeAlarm) {
+            alarmPlayParams.setStartParams();
+        }
         gameParams.setIsAlarm();
     },
     action() {
@@ -483,7 +484,7 @@ const timeButton = {
         }
         gameParams.setIsTime();
         alarmPlayParams.isShowMiniOctopus = false;
-        octopusMovementParams.border = 12;
+        octopusMovementParams.border = 14;
         if (alarmPlayParams.flag) {
             alarmPlayParams.isPlaySound = false;
             alarmPlayParams.isShowNote = true;
@@ -520,11 +521,7 @@ const alarmButton = {
         }
         gameParams.setChangeAlarm();
         alarmPlayParams.showNoteAndMiniOctopus();
-        //alarmPlayParams.setStartParams();
-        octopusMovementParams.border = 12;
-        if (alarmPlayParams.flag) {
-            alarmPlayParams.isPlaySound = false;
-        }
+        octopusMovementParams.border = 14;
     }, 
     draw() {
         if (this.flag) {
@@ -558,7 +555,7 @@ const resetButton = {
         alarmPlayParams.setStartParams();
         alarmPlayParams.hideNoteAndMiniOctopus();
         background = ui.firstBackground;
-        octopusMovementParams.border = 12;
+        octopusMovementParams.border = 14;
     }, draw() {
         if (this.flag) {
             ctx.drawImage(
