@@ -206,7 +206,7 @@ class UI {
     setStartAlarm() {
         this.#alarm.hours = 12;
         this.#alarm.minutes = 0;
-        this.#clock.isPm = true;
+        this.#alarm.isPm = true;
     }
 
     /**
