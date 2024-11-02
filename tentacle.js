@@ -34,26 +34,27 @@ class Tentacle {
         this.#minLeftState = 0;
         this.#moveUpCicle = true;
 
+	let divider = 1.5;
         this.#states = {};
         switch (ind) {
             case 1:
-                this.#initStates(4, ind, 490, 330, 165, 40);
+                this.#initStates(4, ind, 490 / divider, 330 / divider, 165 / divider, 40 / divider);
                 this.#collisionValues = [3];
                 break;
             case 2:
-                this.#initStates(5, ind, 515, 345, 145, 130);
+                this.#initStates(5, ind, 515 / divider, 345 / divider, 145 / divider, 130 / divider);
                 this.#collisionValues = [4];
                 break;
             case 3:
-                this.#initStates(6, ind, 630, 380, 80, 155);
+                this.#initStates(6, ind, 630 / divider, 380 / divider, 80 / divider, 155 / divider);
                 this.#collisionValues = [5];
                 break;
             case 4:
-                this.#initStates(5, ind, 735, 420, 40, 120);
+                this.#initStates(5, ind, 735 / divider, 420 / divider, 40 / divider, 120 / divider);
                 this.#collisionValues = [6];
                 break;
             case 5:
-                this.#initStates(4, ind, 880, 460, 50, 90);
+                this.#initStates(4, ind, 880 / divider, 460 / divider, 50 / divider, 90 / divider);
                 this.#collisionValues = [7, 8, 9, 10];
                 break;
         }

@@ -1,6 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+var divider = 1.5; // для масштаба исходный canvas был 1440 на 810, пришлось уменьшить
+
 // игровые флаги (режимы)
 const gameParams = {
     isGame: false, // отвечает за проигрывание действий, связанных с игрой и демонстрацией игры
@@ -320,10 +322,10 @@ var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctop
 // поведение при нажатии левой красной кнопки
 const leftButton = {
     coords: {
-        xLeft: 100, 
-        xRight: 200,
-        yTop: 557,
-        yBottom: 657,
+        xLeft: 100 / divider, 
+        xRight: 200 / divider,
+        yTop: 557 / divider,
+        yBottom: 657 / divider,
     },
     flag: false,
     drawingObj: ui.pressedButtonLeft,
@@ -352,10 +354,10 @@ const leftButton = {
 // поведение при нажатии правой красной кнопки
 const rightButton = {
     coords: {
-        xLeft: 1240,
-        xRight: 1340,
-        yTop: 557,
-        yBottom: 657,
+        xLeft: 1240 / divider,
+        xRight: 1340 / divider,
+        yTop: 557 / divider,
+        yBottom: 657 / divider,
     },
     flag: false,
     drawingObj: ui.pressedButtonRight,
@@ -388,10 +390,10 @@ const rightButton = {
 // поведение при нажатии кнопки "Игра А"
 const gameAButton = {
     coords: {
-        xLeft: 1212,
-        xRight: 1282,
-        yTop: 82,
-        yBottom: 117,
+        xLeft: 1212 / divider,
+        xRight: 1282 / divider,
+        yTop: 82 / divider,
+        yBottom: 117 / divider,
     },
     flag: false,
     drawingObj: ui.pressedGameAButton,
@@ -425,10 +427,10 @@ const gameAButton = {
 // поведение при нажатии кнопки "Игра Б"
 const gameBButton = {
     coords: {
-        xLeft: 1212,
-        xRight: 1282,
-        yTop: 180,
-        yBottom: 215,
+        xLeft: 1212 / divider,
+        xRight: 1282 / divider,
+        yTop: 180 / divider,
+        yBottom: 215 / divider,
     },
     flag: false,
     drawingObj: ui.pressedGameBButton,
@@ -462,10 +464,10 @@ const gameBButton = {
 // поведение при нажатии кнопки "Время"
 const timeButton = {
     coords: {
-        xLeft: 1212,
-        xRight: 1282,
-        yTop: 278,
-        yBottom: 313,
+        xLeft: 1212 / divider,
+        xRight: 1282 / divider,
+        yTop: 278 / divider,
+        yBottom: 313 / divider,
     },
     flag: false,
     drawingObj: ui.pressedTimeButton,
@@ -501,10 +503,10 @@ const timeButton = {
 // поведение при нажатии кнопки установки времени будильника
 const alarmButton = {
     coords: {
-        xLeft: 1330,
-        xRight: 1360,
-        yTop: 135,
-        yBottom: 165,
+        xLeft: 1330 / divider,
+        xRight: 1360 / divider,
+        yTop: 135 / divider,
+        yBottom: 165 / divider,
     },
     flag: false,
     drawingObj: ui.pressedAlarmButton,
@@ -536,10 +538,10 @@ const alarmButton = {
 // поведение при нажатии кнопки сброса
 const resetButton = {
     coords: {
-        xLeft: 1330,
-        xRight: 1360,
-        yTop: 240,
-        yBottom: 270,
+        xLeft: 1330 / divider,
+        xRight: 1360 / divider,
+        yTop: 240 / divider,
+        yBottom: 270 / divider,
     },
     flag: false,
     drawingObj: ui.pressedResetButton,

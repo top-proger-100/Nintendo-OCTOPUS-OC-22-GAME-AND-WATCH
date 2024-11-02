@@ -69,15 +69,17 @@ class Diver {
         this.#leftBorder = 0;
         this.#isWithBag = false;
 
+	let divider = 1.5;
+
         this.#diversStatesWithoutBag = {
-            0: { 'x': 555, 'y': 210, 'width': 45, 'height': 60, 'image': null },
-            1: { 'x': 500, 'y': 210, 'width': 45, 'height': 60, 'image': null },
-            2: { 'x': 417, 'y': 210, 'width': 55, 'height': 60, 'image': null },
-            3: { 'x': 425, 'y': 320, 'width': 85, 'height': 85, 'image': null },
-            4: { 'x': 455, 'y': 440, 'width': 75, 'height': 90, 'image': null },
-            5: { 'x': 550, 'y': 505, 'width': 80, 'height': 85, 'image': null },
-            6: { 'x': 680, 'y': 505, 'width': 75, 'height': 85, 'image': null },
-            7: { 'x': 825, 'y': 510, 'width': 75, 'height': 85, 'image': null },
+            0: { 'x': 555 / divider, 'y': 210 / divider, 'width': 45 / divider, 'height': 60 / divider, 'image': null },
+            1: { 'x': 500 / divider, 'y': 210 / divider, 'width': 45 / divider, 'height': 60 / divider, 'image': null },
+            2: { 'x': 417 / divider, 'y': 210 / divider, 'width': 55 / divider, 'height': 60 / divider, 'image': null },
+            3: { 'x': 425 / divider, 'y': 320 / divider, 'width': 85 / divider, 'height': 85 / divider, 'image': null },
+            4: { 'x': 455 / divider, 'y': 440 / divider, 'width': 75 / divider, 'height': 90 / divider, 'image': null },
+            5: { 'x': 550 / divider, 'y': 505 / divider, 'width': 80 / divider, 'height': 85 / divider, 'image': null },
+            6: { 'x': 680 / divider, 'y': 505 / divider, 'width': 75 / divider, 'height': 85 / divider, 'image': null },
+            7: { 'x': 825 / divider, 'y': 510 / divider, 'width': 75 / divider, 'height': 85 / divider, 'image': null },
         }
         let imgWbLen = 8;
         for (let i = 1; i <= imgWbLen; i++) {
@@ -92,17 +94,17 @@ class Diver {
         image10.src = './спрайты/водолазы/10.png';
 
         this.#diversStatesWithBag = {
-            0: { 'x': 550, 'y': 210, 'width': 45, 'height': 60, 'image': null },
-            1: { 'x': 500, 'y': 210, 'width': 45, 'height': 60, 'image': null },
-            2: { 'x': 417, 'y': 210, 'width': 83, 'height': 60, 'image': null },
-            3: { 'x': 425, 'y': 320, 'width': 105, 'height': 85, 'image': null },
-            4: { 'x': 450, 'y': 440, 'width': 80, 'height': 100, 'image': null },
-            5: { 'x': 555, 'y': 505, 'width': 85, 'height': 90, 'image': null },
-            6: { 'x': 675, 'y': 505, 'width': 85, 'height': 90, 'image': null },
-            7: { 'x': 795, 'y': 510, 'width': 105, 'height': 85, 'image': null },
-            8: { 'x': 794, 'y': 509, 'width': 160, 'height': 83.5, 'image': null },
-            9: { 'x': 795, 'y': 510, 'width': 105, 'height': 85, 'image': image8 },
-            10: { 'x': 794, 'y': 510, 'width': 107, 'height': 86, 'image': image10 },
+            0: { 'x': 550 / divider, 'y': 210 / divider, 'width': 45 / divider, 'height': 60 / divider, 'image': null },
+            1: { 'x': 500 / divider, 'y': 210 / divider, 'width': 45 / divider, 'height': 60 / divider, 'image': null },
+            2: { 'x': 417 / divider, 'y': 210 / divider, 'width': 83 / divider, 'height': 60 / divider, 'image': null },
+            3: { 'x': 425 / divider, 'y': 320 / divider, 'width': 105 / divider, 'height': 85 / divider, 'image': null },
+            4: { 'x': 450 / divider, 'y': 440 / divider, 'width': 80 / divider, 'height': 100 / divider, 'image': null },
+            5: { 'x': 555 / divider, 'y': 505 / divider, 'width': 85 / divider, 'height': 90 / divider, 'image': null },
+            6: { 'x': 675 / divider, 'y': 505 / divider, 'width': 85 / divider, 'height': 90 / divider, 'image': null },
+            7: { 'x': 795 / divider, 'y': 510 / divider, 'width': 105 / divider, 'height': 85 / divider, 'image': null },
+            8: { 'x': 794 / divider, 'y': 509 / divider, 'width': 160 / divider, 'height': 83.5 / divider, 'image': null },
+            9: { 'x': 795 / divider, 'y': 510 / divider, 'width': 105 / divider, 'height': 85 / divider, 'image': image8 },
+            10: { 'x': 794 / divider, 'y': 510 / divider, 'width': 107 / divider, 'height': 86 / divider, 'image': image10 },
         }
         let imgBLen = 9;
         for (let i = 1; i <= imgBLen; i++) {
@@ -119,8 +121,8 @@ class Diver {
         const catchImage1 = new Image();
         catchImage1.src = './спрайты/водолазы/п1.png';
         this.#diversCatchedStates = {
-            0: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage0 },
-            1: { 'x': 678, 'y': 378, 'width': 140, 'height': 110, 'image': catchImage1 }
+            0: { 'x': 678 / divider, 'y': 378 / divider, 'width': 140 / divider, 'height': 110 / divider, 'image': catchImage0 },
+            1: { 'x': 678 / divider, 'y': 378 / divider, 'width': 140 / divider, 'height': 110 / divider, 'image': catchImage1 }
         }
 
         this.#moneySound = new Audio('./звуки/сокровище.mp4');
