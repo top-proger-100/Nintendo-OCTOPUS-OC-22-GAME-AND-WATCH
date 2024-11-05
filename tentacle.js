@@ -28,33 +28,32 @@ class Tentacle {
      * 
      * @param {number} ind - номер щупальца
      */
-    constructor(ind) {
+    constructor(ind, scale=1) {
         this.#currentState = 0;
         this.#nextStateInc = 1;
         this.#minLeftState = 0;
         this.#moveUpCicle = true;
 
-	let divider = 1.5;
         this.#states = {};
         switch (ind) {
             case 1:
-                this.#initStates(4, ind, 490 / divider, 330 / divider, 165 / divider, 40 / divider);
+                this.#initStates(4, ind, 490 * scale, 330 * scale, 165 * scale, 40 * scale);
                 this.#collisionValues = [3];
                 break;
             case 2:
-                this.#initStates(5, ind, 515 / divider, 345 / divider, 145 / divider, 130 / divider);
+                this.#initStates(5, ind, 515 * scale, 345 * scale, 145 * scale, 130 * scale);
                 this.#collisionValues = [4];
                 break;
             case 3:
-                this.#initStates(6, ind, 630 / divider, 380 / divider, 80 / divider, 155 / divider);
+                this.#initStates(6, ind, 630 * scale, 380 * scale, 80 * scale, 155 * scale);
                 this.#collisionValues = [5];
                 break;
             case 4:
-                this.#initStates(5, ind, 735 / divider, 420 / divider, 40 / divider, 120 / divider);
+                this.#initStates(5, ind, 735 * scale, 420 * scale, 40 * scale, 120 * scale);
                 this.#collisionValues = [6];
                 break;
             case 5:
-                this.#initStates(4, ind, 880 / divider, 460 / divider, 50 / divider, 90 / divider);
+                this.#initStates(4, ind, 880 * scale, 460 * scale, 50 * scale, 90 * scale);
                 this.#collisionValues = [7, 8, 9, 10];
                 break;
         }

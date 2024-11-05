@@ -34,12 +34,12 @@ class Octopus {
      */
     #moveSound;
 
-    constructor() {
+    constructor(scale=1) {
         this.#currentTentacle = 0;
         this.#moveB = false;
-        this.#tentacle1 = new Tentacle(1);
-        this.#tentacle2 = new Tentacle(2);
-        this.#tentacles = [this.#tentacle1, new Tentacle(4), new Tentacle(3), new Tentacle(5)];
+        this.#tentacle1 = new Tentacle(1, scale);
+        this.#tentacle2 = new Tentacle(2, scale);
+        this.#tentacles = [this.#tentacle1, new Tentacle(4, scale), new Tentacle(3, scale), new Tentacle(5, scale)];
         this.#moveSound = new Audio('./звуки/щупальце.mp4');
     }
 

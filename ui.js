@@ -68,7 +68,7 @@ class UI {
      */
     #alarmAudio;
 
-    constructor() {
+    constructor(scale=1) {
         this.#score = 0;
 
         this.#clock = {
@@ -83,13 +83,12 @@ class UI {
             minutes: 0
         };
 
-	let divider = 1.5;
         const am = new Image();
         am.src = './спрайты/интерфейс/дп.png';
-        this.#am = {'x': 605 / divider, 'y': 205 / divider, 'width': 50 / divider, 'height': 25 / divider, 'image': am };
+        this.#am = {'x': 605 * scale, 'y': 205 * scale, 'width': 50 * scale, 'height': 25 * scale, 'image': am };
         const pm = new Image();
         pm.src = './спрайты/интерфейс/пп.png';
-        this.#pm = {'x': 605 / divider, 'y': 240 / divider, 'width': 50 / divider, 'height': 25 / divider, 'image': pm };
+        this.#pm = {'x': 605 * scale, 'y': 240 * scale, 'width': 50 * scale, 'height': 25 * scale, 'image': pm };
 
         const digit1 = new Image();
         digit1.src = './спрайты/интерфейс/0.png';
@@ -97,10 +96,10 @@ class UI {
         digit2.src = './спрайты/интерфейс/-1.png';
         this.#noneDigit = digit2;
         this.#digits = {
-            0: {'x': 830 / divider, 'y': 205 / divider, 'width': 40 / divider, 'height': 65 / divider, 'image': digit1}, 
-            1: {'x': 782 / divider, 'y': 205 / divider, 'width': 40 / divider, 'height': 65 / divider, 'image': digit2},
-            2: {'x': 715 / divider, 'y': 205 / divider, 'width': 40 / divider, 'height': 65 / divider, 'image': digit2},
-            3: {'x': 668 / divider, 'y': 205 / divider, 'width': 40 / divider, 'height': 65 / divider, 'image': digit2}
+            0: {'x': 830 * scale, 'y': 205 * scale, 'width': 40 * scale, 'height': 65 * scale, 'image': digit1}, 
+            1: {'x': 782 * scale, 'y': 205 * scale, 'width': 40 * scale, 'height': 65 * scale, 'image': digit2},
+            2: {'x': 715 * scale, 'y': 205 * scale, 'width': 40 * scale, 'height': 65 * scale, 'image': digit2},
+            3: {'x': 668 * scale, 'y': 205 * scale, 'width': 40 * scale, 'height': 65 * scale, 'image': digit2}
         };
 
         this.#allDigits = [];
@@ -118,13 +117,13 @@ class UI {
         const pressedTimeAlarmButton = new Image();
         pressedTimeAlarmButton.src = './спрайты/интерфейс/нажатая кнопка (время).png';
         this.#buttons = {
-            left: { 'x': 100 / divider, 'y': 557 / divider, 'width': 100 / divider, 'height': 100 / divider, 'image': pressedButton },
-            right: { 'x': 1240 / divider, 'y': 557 / divider, 'width': 100 / divider, 'height': 100 / divider, 'image': pressedButton },
-            gameA: {'x': 1212 / divider, 'y': 82 / divider, 'width': 70 / divider, 'height': 35 / divider, 'image': pressedChooseButton},
-            gameB: {'x': 1212 / divider, 'y': 180 / divider, 'width': 70 / divider, 'height': 35 / divider, 'image': pressedChooseButton},
-            time: {'x': 1212 / divider, 'y': 278 / divider, 'width': 70 / divider, 'height': 35 / divider, 'image': pressedChooseButton},
-            alarm: {'x': 1330 / divider, 'y': 135 / divider, 'width': 30 / divider, 'height': 30 / divider, 'image': pressedTimeAlarmButton},
-            reset: {'x': 1330 / divider, 'y': 240 / divider, 'width': 30 / divider, 'height': 30 / divider, 'image': pressedTimeAlarmButton}
+            left: { 'x': 100 * scale, 'y': 557 * scale, 'width': 100 * scale, 'height': 100 * scale, 'image': pressedButton },
+            right: { 'x': 1240 * scale, 'y': 557 * scale, 'width': 100 * scale, 'height': 100 * scale, 'image': pressedButton },
+            gameA: {'x': 1212 * scale, 'y': 82 * scale, 'width': 70 * scale, 'height': 35 * scale, 'image': pressedChooseButton},
+            gameB: {'x': 1212 * scale, 'y': 180 * scale, 'width': 70 * scale, 'height': 35 * scale, 'image': pressedChooseButton},
+            time: {'x': 1212 * scale, 'y': 278 * scale, 'width': 70 * scale, 'height': 35 * scale, 'image': pressedChooseButton},
+            alarm: {'x': 1330 * scale, 'y': 135 * scale, 'width': 30 * scale, 'height': 30 * scale, 'image': pressedTimeAlarmButton},
+            reset: {'x': 1330 * scale, 'y': 240 * scale, 'width': 30 * scale, 'height': 30 * scale, 'image': pressedTimeAlarmButton}
         };
 
         const background = new Image();
@@ -137,17 +136,17 @@ class UI {
 
         const gameA = new Image();
         gameA.src = './спрайты/интерфейс/игра а.png';
-        this.#gameALabel = { 'x': 390 / divider, 'y': 545 / divider, 'width': 100 / divider, 'height': 30 / divider, 'image': gameA};
+        this.#gameALabel = { 'x': 390 * scale, 'y': 545 * scale, 'width': 100 * scale, 'height': 30 * scale, 'image': gameA};
 
         const gameB = new Image();
         gameB.src = './спрайты/интерфейс/игра б.png';
-        this.#gameBLabel = { 'x': 390 / divider, 'y': 580 / divider, 'width': 100 / divider, 'height': 30 / divider, 'image': gameB};
+        this.#gameBLabel = { 'x': 390 * scale, 'y': 580 * scale, 'width': 100 * scale, 'height': 30 * scale, 'image': gameB};
 
         this.#currentGameLabel = this.#gameALabel;
 
         const twoPoints = new Image();
         twoPoints.src = './спрайты/интерфейс/двоеточие.png';
-        this.#twoPoints = { 'x': 760 / divider, 'y': 210 / divider, 'width': 20 / divider, 'height': 50 / divider, 'image': twoPoints };
+        this.#twoPoints = { 'x': 760 * scale, 'y': 210 * scale, 'width': 20 * scale, 'height': 50 * scale, 'image': twoPoints };
 
         this.#alarmAudio = new Audio('./звуки/будильник.mp4');
 
@@ -160,10 +159,10 @@ class UI {
         const miniOctopusLabel = new Image();
         miniOctopusLabel.src = './спрайты/интерфейс/маленький осьминог.png';
         this.#alarmLabels = {
-            top: {'x': 905 / divider, 'y': 195 / divider, 'width': 50 / divider, 'height': 25 / divider, 'image': topLightning},
-            bottom: {'x': 910 / divider, 'y': 270 / divider, 'width': 45 / divider, 'height': 20 / divider, 'image': bottomLightning},
-            note: {'x': 912 / divider, 'y': 230 / divider, 'width': 35 / divider, 'height': 25 / divider, 'image': note},
-            miniOctopusLabel: {'x': 960 / divider, 'y': 210 / divider, 'width': 95 / divider, 'height': 90 / divider, 'image': miniOctopusLabel}
+            top: {'x': 905 * scale, 'y': 195 * scale, 'width': 50 * scale, 'height': 25 * scale, 'image': topLightning},
+            bottom: {'x': 910 * scale, 'y': 270 * scale, 'width': 45 * scale, 'height': 20 * scale, 'image': bottomLightning},
+            note: {'x': 912 * scale, 'y': 230 * scale, 'width': 35 * scale, 'height': 25 * scale, 'image': note},
+            miniOctopusLabel: {'x': 960 * scale, 'y': 210 * scale, 'width': 95 * scale, 'height': 90 * scale, 'image': miniOctopusLabel}
         };
     }
 

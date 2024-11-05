@@ -1,7 +1,11 @@
 const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
 
-var divider = 1.5; // для масштаба исходный canvas был 1440 на 810, пришлось уменьшить
+var scale = 2/3; // при 1 размеры 1440 на 810
+
+canvas.width = 1440*scale;
+canvas.height = 810*scale;
+
+const ctx = canvas.getContext('2d');
 
 // игровые флаги (режимы)
 const gameParams = {
@@ -59,20 +63,20 @@ const gameParams = {
     },
 };
 
-var ui = new UI();
+var ui = new UI(scale);
 var background = ui.firstBackground;
 var currentGameLabel = ui.gameLabel;
 var twoPoints = ui.twoPoints;
 var miniOctopusLabel = ui.miniOctopusLabel;
 var noteLabel = ui.noteLabel;
 
-var octopus = new Octopus();
+var octopus = new Octopus(scale);
 
-var currentDiver = new Diver();
+var currentDiver = new Diver(scale);
 currentDiver.setFirst();
-var secondDiver = new Diver();
+var secondDiver = new Diver(scale);
 secondDiver.currentInd = 1;
-var thirdDiver = new Diver();
+var thirdDiver = new Diver(scale);
 var divers = [currentDiver, secondDiver, thirdDiver];
 
 // объект отвечает за смену кадра анимации получения сокровища
@@ -322,10 +326,10 @@ var animations = [getMoneyAnim, octopusMovementParams, collision, catchedByOctop
 // поведение при нажатии левой красной кнопки
 const leftButton = {
     coords: {
-        xLeft: 100 / divider, 
-        xRight: 200 / divider,
-        yTop: 557 / divider,
-        yBottom: 657 / divider,
+        xLeft: 100 * scale, 
+        xRight: 200 * scale,
+        yTop: 557 * scale,
+        yBottom: 657 * scale,
     },
     flag: false,
     drawingObj: ui.pressedButtonLeft,
@@ -354,10 +358,10 @@ const leftButton = {
 // поведение при нажатии правой красной кнопки
 const rightButton = {
     coords: {
-        xLeft: 1240 / divider,
-        xRight: 1340 / divider,
-        yTop: 557 / divider,
-        yBottom: 657 / divider,
+        xLeft: 1240 * scale,
+        xRight: 1340 * scale,
+        yTop: 557 * scale,
+        yBottom: 657 * scale,
     },
     flag: false,
     drawingObj: ui.pressedButtonRight,
@@ -390,10 +394,10 @@ const rightButton = {
 // поведение при нажатии кнопки "Игра А"
 const gameAButton = {
     coords: {
-        xLeft: 1212 / divider,
-        xRight: 1282 / divider,
-        yTop: 82 / divider,
-        yBottom: 117 / divider,
+        xLeft: 1212 * scale,
+        xRight: 1282 * scale,
+        yTop: 82 * scale,
+        yBottom: 117 * scale,
     },
     flag: false,
     drawingObj: ui.pressedGameAButton,
@@ -427,10 +431,10 @@ const gameAButton = {
 // поведение при нажатии кнопки "Игра Б"
 const gameBButton = {
     coords: {
-        xLeft: 1212 / divider,
-        xRight: 1282 / divider,
-        yTop: 180 / divider,
-        yBottom: 215 / divider,
+        xLeft: 1212 * scale,
+        xRight: 1282 * scale,
+        yTop: 180 * scale,
+        yBottom: 215 * scale,
     },
     flag: false,
     drawingObj: ui.pressedGameBButton,
@@ -464,10 +468,10 @@ const gameBButton = {
 // поведение при нажатии кнопки "Время"
 const timeButton = {
     coords: {
-        xLeft: 1212 / divider,
-        xRight: 1282 / divider,
-        yTop: 278 / divider,
-        yBottom: 313 / divider,
+        xLeft: 1212 * scale,
+        xRight: 1282 * scale,
+        yTop: 278 * scale,
+        yBottom: 313 * scale,
     },
     flag: false,
     drawingObj: ui.pressedTimeButton,
@@ -503,10 +507,10 @@ const timeButton = {
 // поведение при нажатии кнопки установки времени будильника
 const alarmButton = {
     coords: {
-        xLeft: 1330 / divider,
-        xRight: 1360 / divider,
-        yTop: 135 / divider,
-        yBottom: 165 / divider,
+        xLeft: 1330 * scale,
+        xRight: 1360 * scale,
+        yTop: 135 * scale,
+        yBottom: 165 * scale,
     },
     flag: false,
     drawingObj: ui.pressedAlarmButton,
@@ -538,10 +542,10 @@ const alarmButton = {
 // поведение при нажатии кнопки сброса
 const resetButton = {
     coords: {
-        xLeft: 1330 / divider,
-        xRight: 1360 / divider,
-        yTop: 240 / divider,
-        yBottom: 270 / divider,
+        xLeft: 1330 * scale,
+        xRight: 1360 * scale,
+        yTop: 240 * scale,
+        yBottom: 270 * scale,
     },
     flag: false,
     drawingObj: ui.pressedResetButton,
@@ -587,7 +591,7 @@ function restart() {
         animations[i].flag = false;
         animations[i].counter = 0;
     }
-    octopus = new Octopus();
+    octopus = new Octopus(scale);
 }
 
 window.addEventListener('keyup', function(event) {
